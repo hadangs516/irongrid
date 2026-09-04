@@ -1,0 +1,2592 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#070a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>IRONGRID</title>
+<style>
+:root{
+  --bg:#070a0f; --pan:#111826; --pan2:#0d131e; --edge:#22304a;
+  --tx:#d8e2ef; --mu:#7d8ea4; 
+  --gold:#ffc247; --red:#ff5f4a; --grn:#4ade80; --blu:#5ec8ff;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+  color:var(--tx);-webkit-user-select:none;user-select:none;touch-action:manipulation}
+#stage{position:fixed;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;
+  background:radial-gradient(120% 90% at 50% 0%,#101825 0%,#070a0f 70%);overflow:hidden}
+
+/* ---------- 상단 ---------- */
+#top{height:46px;display:flex;align-items:center;gap:20px;padding:0 16px;
+  background:linear-gradient(180deg,#141c2b,#0c121c);border-bottom:2px solid #1c2942}
+#top .grp{display:flex;align-items:baseline;gap:8px}
+#top .lb{font-size:16px;color:var(--mu);letter-spacing:.02em}
+#top b{font-size:22px;font-weight:700;letter-spacing:.01em}
+#t_coin{color:var(--gold)}
+#t_coin::before{content:"◆ ";font-size:16px}
+.ph{font-size:16px;color:#9fb3cc;border:1.5px solid #2a3b58;border-radius:999px;padding:3px 14px}
+#top .sp{flex:1}
+#brand{font-size:21px;font-weight:800;letter-spacing:.22em;color:#42597c}
+#t_set{height:34px;padding:0 18px;font-size:17px;border-radius:9px;border:1.5px solid #2b3d5c;
+  background:#16202f;color:#c3d2e4;font-weight:600;cursor:pointer}
+#t_set:active{background:#1d2a3d}
+
+/* ---------- 필드 ---------- */
+#field{display:block;width:1280px;height:460px}
+
+/* ---------- 하단 ---------- */
+#bottom{height:214px;display:flex;gap:14px;padding:9px 14px;
+  background:linear-gradient(180deg,#0c121c,#141c2b);border-top:2px solid #1c2942}
+#left{flex:0 0 748px;display:flex;flex-direction:column;gap:7px}
+#tiers{display:flex;gap:7px;height:34px}
+.tab{flex:1;border:1.5px solid #2a3852;background:#121a27;color:#93a5bb;border-radius:8px;
+  font-size:18px;font-weight:600;cursor:pointer;font-family:inherit;position:relative}
+.tab.on{background:#1c2739;border-color:var(--tc);color:#fff;box-shadow:0 0 0 1px var(--tc) inset}
+.tab.lock{color:#5b6a7d}
+.tab.lock::after{content:"■";position:absolute;right:9px;top:6px;font-size:12px;color:#5b6a7d}
+#shop{display:flex;gap:9px;flex:1}
+.card{flex:1;background:linear-gradient(180deg,#16202f,#0f1724);border:1.5px solid #26344c;
+  border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  cursor:pointer;position:relative;overflow:hidden;font-family:inherit;padding-top:2px}
+.card .ic{width:76px;height:76px;display:block}
+.card .nm{font-size:17px;color:#cfdcea;font-weight:600;line-height:1.1}
+.card .cs{font-size:18px;color:var(--gold);font-weight:700}
+.card.locked .cs{font-size:14px}
+.card.pick{border-color:var(--tc);background:#1b2637;box-shadow:0 0 0 2px var(--tc) inset,0 0 16px rgba(255,255,255,.06)}
+.card.locked{filter:grayscale(1) brightness(.55)}
+.card.locked .cs{color:#8593a5}
+.card .lk{position:absolute;top:6px;right:9px;font-size:14px;color:#9aa8bb}
+.card:active{transform:translateY(1px)}
+
+#side{flex:1;background:linear-gradient(180deg,#111a28,#0c131f);border:1.5px solid #22304a;
+  border-radius:12px;padding:9px 12px 16px;display:block;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#33445f transparent}
+#side::-webkit-scrollbar{width:9px}
+#side::-webkit-scrollbar-track{background:transparent}
+#side::-webkit-scrollbar-thumb{background:#33445f;border-radius:5px}
+#ver{position:absolute;right:13px;bottom:5px;font-size:12px;letter-spacing:.06em;
+  color:#5b6e86;pointer-events:none;z-index:6;font-variant-numeric:tabular-nums}
+#banner{position:absolute;left:50%;top:184px;transform:translate(-50%,0);text-align:center;
+  pointer-events:none;opacity:0;z-index:4}
+#banner b{display:block;font-size:74px;font-weight:800;letter-spacing:.14em;color:#eaf2fb;
+  text-shadow:0 4px 26px rgba(0,0,0,.85),0 0 42px rgba(94,200,255,.45)}
+#banner i{display:block;margin-top:6px;font-style:normal;font-size:26px;font-weight:700;
+  letter-spacing:.2em;color:#ffc247;text-shadow:0 3px 14px rgba(0,0,0,.9)}
+#banner.show{animation:bn 1.7s ease-out forwards}
+@keyframes bn{
+  0%{opacity:0;transform:translate(-50%,14px) scale(.94)}
+  16%{opacity:1;transform:translate(-50%,0) scale(1)}
+  70%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-16px) scale(1.02)}
+}
+#t_coin.up{animation:cp .45s ease-out}
+@keyframes cp{0%{transform:scale(1)}35%{transform:scale(1.16);color:#fff0c2}100%{transform:scale(1)}}
+.tchip{display:inline-block;padding:1px 9px;border-radius:6px;font-size:13px;font-weight:700;
+  border:1.5px solid currentColor;line-height:1.5}
+.sect{display:flex;align-items:center;gap:8px;margin:7px 0 4px;font-size:12px;font-weight:700;
+  letter-spacing:.1em;color:#5f7592}
+.sect::after{content:"";flex:1;height:1px;background:#1e2b40}
+.pbar{height:7px;border-radius:4px;background:#0b1119;border:1px solid #223349;overflow:hidden;margin:2px 0 8px}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,#3ea6ff,#7fe0ff);width:0%;transition:width .18s linear}
+.sh{font-size:19px;font-weight:700;display:flex;align-items:baseline;gap:8px;margin-bottom:5px}
+.sh em{font-style:normal;font-size:15px;color:var(--mu)}
+.stat{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:2px 8px;align-items:baseline;font-size:15px;margin-bottom:4px}
+.stat span{color:var(--mu)}
+.stat b{font-weight:700;font-size:16px}
+.stat i{font-style:normal;color:var(--grn);font-size:14px}
+.desc{font-size:14px;line-height:1.38;color:#a9bbd0;margin-bottom:6px}
+.hprow{display:flex;align-items:center;gap:9px;font-size:15px;margin:3px 0 2px}
+.hprow .pbar{flex:1;margin:0}
+.hprow b{font-weight:700;font-size:15px}
+.cols{display:flex;gap:16px;margin-bottom:5px}
+.col{flex:1;min-width:0}
+.col .ct{font-size:12px;font-weight:700;letter-spacing:.08em;color:#5f7592;
+  border-bottom:1px solid #1e2b40;padding-bottom:3px;margin-bottom:4px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;align-items:baseline;font-size:14px}
+.kv span{color:var(--mu);white-space:nowrap}
+.kv b{font-weight:700;font-size:14px;text-align:right}
+.kv i{font-style:normal;color:var(--grn);font-size:13px}
+.note{font-size:14px;color:var(--gold);margin-bottom:8px}
+.btns{display:flex;gap:6px;position:sticky;bottom:-16px;z-index:2;padding:6px 0 9px;
+  background:linear-gradient(180deg,rgba(12,19,31,0),#0d1420 30%)}
+.bt{flex:1;height:40px;border-radius:9px;border:1.5px solid #2c3d5a;background:#17222f;color:#cfdcea;
+  font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
+.bt b{color:var(--gold);font-size:15px}
+.bt.up{border-color:#2f6a4a;background:#12261d}
+.bt.fix{border-color:#2f5a6a;background:#122430}
+.bt.sell{border-color:#6a4a2f;background:#241a12}
+.bt.off{opacity:.42;pointer-events:none}
+.bt:active{transform:translateY(1px)}
+.go{width:100%;height:48px;border-radius:11px;border:0;font-size:21px;font-weight:800;letter-spacing:.04em;
+  background:linear-gradient(180deg,#3ea6ff,#1d6ec4);color:#04121f;cursor:pointer;font-family:inherit;margin-top:8px;
+  position:sticky;bottom:0;z-index:2}
+.modal .go{position:static}
+.go:active{filter:brightness(.92)}
+.go.off{filter:grayscale(.7) brightness(.6)}
+.modal .go{width:100%;margin-top:4px}
+
+/* ---------- 토스트 ---------- */
+.toast{position:absolute;left:50%;top:74px;transform:translate(-50%,-14px);opacity:0;
+  background:rgba(9,14,22,.94);border:1.5px solid #2d4260;color:#e2ecf8;
+  padding:11px 22px;border-radius:10px;font-size:19px;pointer-events:none;transition:.2s;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.bad{border-color:#6a2f2f;color:#ffc9c0}
+
+/* ---------- 모달 ---------- */
+#mask{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(4,7,12,.82);backdrop-filter:blur(3px);z-index:20}
+.modal{display:none;width:640px;max-height:640px;overflow:auto;background:linear-gradient(180deg,#131c2b,#0c121c);
+  border:1.5px solid #2a3b58;border-radius:16px;padding:26px 30px}
+.modal h2{font-size:30px;font-weight:800;letter-spacing:.02em;margin-bottom:6px}
+.modal h2.win{color:var(--blu)} .modal h2.lose{color:var(--red)}
+.modal p{font-size:18px;color:#a9bbd0;line-height:1.5;margin-bottom:14px}
+.modal .why{color:#ffb0a4}
+.rs{display:grid;grid-template-columns:1fr auto;gap:7px 16px;font-size:19px;margin:16px 0 20px}
+.rs span{color:var(--mu)} .rs b{font-weight:700;text-align:right}
+.rs b.hi{color:var(--gold);font-size:22px}
+.row{display:flex;gap:10px;margin-bottom:12px}
+.row label{flex:0 0 108px;font-size:18px;color:var(--mu);align-self:center}
+.row input{flex:1;height:48px;border-radius:9px;border:1.5px solid #2c3d5a;background:#0c131f;
+  color:var(--tx);font-size:20px;padding:0 14px;font-family:inherit;min-width:0}
+.row input:focus{outline:none;border-color:var(--blu)}
+.msg{font-size:17px;min-height:26px;line-height:1.4;margin-bottom:10px}
+.msg.ok{color:var(--blu)} .msg.bad{color:#ffb0a4}
+.mbtns{display:flex;gap:10px;flex-wrap:wrap}
+.mb{flex:1;min-width:150px;height:52px;border-radius:10px;border:1.5px solid #2c3d5a;background:#16202f;
+  color:#cfdcea;font-size:19px;font-weight:600;cursor:pointer;font-family:inherit}
+.mb.pri{background:linear-gradient(180deg,#3ea6ff,#1d6ec4);color:#04121f;border:0;font-weight:800}
+.mb:active{transform:translateY(1px)}
+.mb:disabled{opacity:.5}
+.contact{display:none;margin-top:12px;font-size:17px;color:var(--gold);word-break:break-all}
+#m_boot{text-align:center;width:600px}
+#m_boot .logo{font-size:56px;font-weight:800;letter-spacing:.20em;color:#e6f0fb;margin-bottom:2px}
+#m_boot .sub{font-size:19px;color:var(--mu);margin-bottom:26px;letter-spacing:.06em}
+#m_boot .mbtns{margin-top:8px}
+#m_boot .tip{font-size:15px;color:#69798d;margin-top:16px;line-height:1.5}
+.helplist{font-size:17px;line-height:1.75;color:#b6c6da;margin-bottom:16px}
+.helplist b{color:#e2ecf8}
+
+#rotate{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:#070a0f;color:#d8e2ef;font-size:22px;z-index:50}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="top">
+    <div class="grp"><span class="lb">스테이지</span><b id="t_stage">1</b></div>
+    <div class="grp"><span class="lb">코인</span><b id="t_coin">0</b></div>
+    <span class="ph" id="t_phase">준비</span>
+    <div class="sp"></div>
+    <div id="brand">IRONGRID</div>
+    <button id="t_set">설정</button>
+  </div>
+  <canvas id="field" width="1280" height="460"></canvas>
+  <div id="bottom">
+    <div id="left"><div id="tiers"></div><div id="shop"></div></div>
+    <div id="side"></div>
+  </div>
+  <div id="banner"><b></b><i></i></div>
+  <div id="ver">v0.0.0</div>
+  <div id="toast" class="toast"></div>
+
+  <div id="mask">
+    <div id="m_boot" class="modal">
+      <div class="logo">IRONGRID</div>
+      <div class="sub">5×10 방어선을 지켜라</div>
+      <div class="mbtns">
+        <button class="mb pri" id="b_mo">모바일로 시작</button>
+        <button class="mb" id="b_pc">PC로 시작</button>
+      </div>
+      <div class="tip">모바일을 고르면 전체 화면으로 전환합니다. 설정에서 언제든 바꿀 수 있습니다.</div>
+    </div>
+
+    <div id="m_settings" class="modal">
+      <h2>설정</h2>
+      <div class="mbtns">
+        <button class="mb" id="set_save">저장하기</button>
+        <button class="mb" id="set_load">불러오기</button>
+      </div>
+      <div class="mbtns" style="margin-top:10px">
+        <button class="mb" id="set_sfx">효과음 켜짐</button>
+        <button class="mb" id="set_bgm">배경음 켜짐</button>
+      </div>
+      <div class="mbtns" style="margin-top:10px">
+        <button class="mb" id="set_mode">모드 변경</button>
+        <button class="mb" id="set_help">게임 방법</button>
+      </div>
+      <div class="mbtns" style="margin-top:10px">
+        <button class="mb" id="set_reset">진행 초기화</button>
+        <button class="mb pri" id="set_close">닫기</button>
+      </div>
+    </div>
+
+    <div id="m_save" class="modal">
+      <h2>저장하기</h2>
+      <p>아이디는 한글, 비밀번호는 숫자 4자리입니다.</p>
+      <div class="row"><label>아이디</label><input id="sv_id" maxlength="12" autocomplete="off"></div>
+      <div class="row"><label>비밀번호</label><input id="sv_pw" maxlength="4" inputmode="numeric" autocomplete="off"></div>
+      <div class="msg" id="sv_msg"></div>
+      <div class="mbtns">
+        <button class="mb pri" id="sv_go">저장</button>
+        <button class="mb" id="sv_close">뒤로</button>
+      </div>
+    </div>
+
+    <div id="m_load" class="modal">
+      <h2>불러오기</h2>
+      <p>저장할 때 쓴 아이디와 비밀번호를 입력하세요.</p>
+      <div class="row"><label>아이디</label><input id="ld_id" maxlength="12" autocomplete="off"></div>
+      <div class="row"><label>비밀번호</label><input id="ld_pw" maxlength="4" inputmode="numeric" autocomplete="off"></div>
+      <div class="msg" id="ld_msg"></div>
+      <div class="contact" id="ld_contact"></div>
+      <div class="mbtns">
+        <button class="mb pri" id="ld_go">불러오기</button>
+        <button class="mb" id="ld_close">뒤로</button>
+      </div>
+    </div>
+
+    <div id="m_help" class="modal">
+      <h2>게임 방법</h2>
+      <div class="helplist">
+        <b>1.</b> 준비 단계에서 빈 칸을 누르고 아래 상점에서 터렛을 고르면 설치됩니다.<br>
+        <b>2.</b> 설치된 터렛을 누르면 레벨업, 수리, 판매를 할 수 있습니다.<br>
+        <b>3.</b> 전투가 시작되면 배치를 바꿀 수 없습니다.<br>
+        <b>4.</b> 적이 왼쪽 방어선에 닿으면 그 즉시 실패합니다.<br>
+        <b>5.</b> 터렛은 체력이 0이 되면 파괴되어 사라집니다.<br>
+        <b>6.</b> 실패해도 처치한 적만큼 코인을 받습니다.<br>
+        <b>주의.</b> 진행은 자동으로 저장되지 않습니다. 새로고침하거나 창을 닫기 전에 설정에서 <b>저장하기</b>를 눌러 주세요.<br>
+        <b>7.</b> 공격 터렛은 자기 행에 있는 적만 공격합니다.<br>
+        <b>8.</b> 정비, 지휘, 융합로, 절대 방벽 같은 지원 터렛과 확산, 연쇄, 시간 왜곡의 특수 효과는 행에 상관없이 적용됩니다.<br>
+        <b>9.</b> 상위 티어는 정해진 스테이지에 도달하면 열립니다.
+      </div>
+      <div class="contact" id="help_contact" style="display:block"></div>
+      <div class="mbtns" style="margin-top:14px"><button class="mb pri" id="help_close">뒤로</button></div>
+    </div>
+
+    <div id="m_result" class="modal"></div>
+
+    <div id="m_pause" class="modal">
+      <h2>일시정지</h2>
+      <p>전투를 포기하면 그 스테이지는 실패로 처리됩니다. 처치한 적만큼의 코인은 받습니다.</p>
+      <div class="mbtns">
+        <button class="mb pri" id="pause_go">계속하기</button>
+        <button class="mb" id="pause_quit">전투 포기</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="rotate">기기를 가로로 돌려 주세요</div>
+<script>
+/* ===== src/10_data.js ===== */
+/* ============================================================
+   IRONGRID - 데이터 정의 (DOM 의존 없음, 헤드리스 시뮬레이션 공용)
+   ============================================================ */
+
+var GRID_ROWS = 5;
+var GRID_COLS = 10;
+var MAX_LEVEL = 10;
+var MAX_STAGE = 50;
+
+/* ---------- 티어 ---------- */
+var TIERS = [
+  { id: 'bronze',   name: '브론즈',   col: '#c8813c', lit: '#ffbe72', dark: '#5a3616', unlock: 1  },
+  { id: 'silver',   name: '실버',     col: '#b6c3d4', lit: '#eef5ff', dark: '#3d4756', unlock: 5  },
+  { id: 'platinum', name: '플래티넘', col: '#3ec27f', lit: '#8dffc4', dark: '#12472e', unlock: 11 },
+  { id: 'diamond',  name: '다이아',   col: '#4aa8ff', lit: '#a8dcff', dark: '#12385e', unlock: 19 },
+  { id: 'master',   name: '마스터',   col: '#a472ff', lit: '#dcc0ff', dark: '#33195e', unlock: 29 }
+];
+
+/* ---------- 성장 계수 ---------- */
+var GROW = {
+  dmg: 0.22,   // 레벨당 공격력 +22%p
+  hp: 0.20,    // 레벨당 최대 체력 +20%p
+  rate: 0.05,  // 레벨당 공격 속도 +5%p (소폭)
+  sp: 0.13     // 레벨당 특수능력 수치 +13%p
+};
+
+function lvMul(k, lv) { return 1 + GROW[k] * (lv - 1); }
+
+/* ---------- 터렛 25종 ----------
+   hp    : Lv1 최대 체력
+   dmg   : Lv1 발당 공격력
+   rate  : Lv1 초당 발사 횟수
+   range : 사거리(칸)
+   art   : 스프라이트 형태 키
+   sp    : 특수능력 { k: 종류, ...수치 }
+*/
+var TURRETS = [
+  /* ===== 브론즈 ===== */
+  { id: 'gatling', cost: 100, up: 42, tier: 0, name: '개틀링 터렛', art: 'gatling',
+    hp: 130, dmg: 5, rate: 2.4, range: 4.6, proj: 'bullet',
+    desc: '단일 표적을 빠르게 연사한다.' },
+
+  { id: 'bulwark', cost: 140, up: 56, tier: 0, name: '방벽 터렛', art: 'wall',
+    hp: 1400, dmg: 3, rate: 0.8, range: 1.2, proj: 'bullet',
+    desc: '체력이 매우 높고 공격력은 낮다.' },
+
+  { id: 'flame', cost: 120, up: 50, tier: 0, name: '화염 터렛', art: 'flame',
+    hp: 138, dmg: 4, rate: 2.0, range: 3.2, proj: 'flame',
+    sp: { k: 'burn', dps: 3, dur: 3 },
+    desc: '명중한 적에게 3초간 초당 {dps} 지속 대미지를 입힌다.' },
+
+  { id: 'marksman', cost: 155, up: 62, tier: 0, name: '저격 견습 터렛', art: 'sniper',
+    hp: 95, dmg: 24, rate: 0.5, range: 6.5, proj: 'beam',
+    desc: '사거리가 길고 발사 간격이 느리며 단발 대미지가 높다.' },
+
+  { id: 'mortarS', cost: 175, up: 70, tier: 0, name: '확산 견습 터렛', art: 'mortar',
+    hp: 120, dmg: 7, rate: 1.0, range: 5.6, proj: 'shell',
+    sp: { k: 'splash', r: 0.9 },
+    desc: '착탄 지점 반경 {r}칸의 적 전체에 대미지를 입힌다.' },
+
+  /* ===== 실버 ===== */
+  { id: 'frost', cost: 340, up: 152, tier: 1, name: '냉기 터렛', art: 'frost',
+    hp: 230, dmg: 10, rate: 1.6, range: 5.0, proj: 'ice',
+    sp: { k: 'slow', amt: 0.30, dur: 2.0 },
+    desc: '명중한 적의 이동 속도를 2초간 {amt} 감소시킨다.' },
+
+  { id: 'steelwall', cost: 430, up: 190, tier: 1, name: '강철 방벽 터렛', art: 'wall',
+    hp: 4200, dmg: 8, rate: 0.9, range: 1.2, proj: 'bullet',
+    sp: { k: 'tough', cut: 0.12 },
+    desc: '체력이 매우 높고 받는 대미지가 {cut} 감소한다.' },
+
+  { id: 'arc', cost: 390, up: 172, tier: 1, name: '연쇄 전격 터렛', art: 'arc',
+    hp: 250, dmg: 16, rate: 1.4, range: 4.6, proj: 'spark',
+    sp: { k: 'chain', n: 2, ratio: 0.6 },
+    desc: '명중 시 근처 적 {n}명에게 대미지의 {ratio}가 추가로 전이된다.' },
+
+  { id: 'repair', cost: 300, up: 134, tier: 1, name: '정비 터렛', art: 'repair',
+    hp: 460, dmg: 0, rate: 1.0, range: 4.0, proj: 'none',
+    sp: { k: 'heal', pct: 0.022 },
+    desc: '사거리 안의 아군 터렛 체력을 초당 최대 체력의 {pct} 회복시킨다.' },
+
+  { id: 'piercer', cost: 470, up: 208, tier: 1, name: '관통 화살 터렛', art: 'pierce',
+    hp: 205, dmg: 21, rate: 1.2, range: 10.0, proj: 'lance',
+    sp: { k: 'pierce', lanes: 1 },
+    desc: '같은 행의 적을 한 발로 모두 관통한다.' },
+
+  /* ===== 플래티넘 ===== */
+  { id: 'sniper', cost: 1050, up: 465, tier: 2, name: '저격 터렛', art: 'sniper',
+    hp: 300, dmg: 205, rate: 0.45, range: 9.5, proj: 'beam',
+    desc: '사거리와 단발 대미지가 매우 높고 발사 간격이 느리다.' },
+
+  { id: 'mortar', cost: 980, up: 435, tier: 2, name: '확산 터렛', art: 'mortar',
+    hp: 340, dmg: 62, rate: 0.9, range: 6.6, proj: 'shell',
+    sp: { k: 'splash', r: 1.4 },
+    desc: '착탄 지점 반경 {r}칸의 적 전체에 대미지를 입힌다.' },
+
+  { id: 'shock', cost: 830, up: 368, tier: 2, name: '충격파 터렛', art: 'shock',
+    hp: 390, dmg: 46, rate: 1.2, range: 4.6, proj: 'wave',
+    sp: { k: 'knock', d: 0.6 },
+    desc: '명중한 적을 뒤로 {d}칸 밀어낸다.' },
+
+  { id: 'corrode', cost: 790, up: 350, tier: 2, name: '부식 터렛', art: 'corrode',
+    hp: 255, dmg: 41, rate: 1.6, range: 5.0, proj: 'acid',
+    sp: { k: 'armor', amt: 0.30, dur: 4.0 },
+    desc: '명중한 적의 방어력을 4초간 {amt} 감소시킨다.' },
+
+  { id: 'fieldwall', cost: 1250, up: 555, tier: 2, name: '야전 방벽 터렛', art: 'wall',
+    hp: 11000, dmg: 30, rate: 1.0, range: 1.2, proj: 'bullet',
+    sp: { k: 'guard', ch: 0.30 },
+    desc: '체력이 극도로 높고 {ch} 확률로 받는 대미지가 절반이 된다.' },
+
+  /* ===== 다이아 ===== */
+  { id: 'tesla', cost: 3100, up: 1395, tier: 3, name: '전기 터렛', art: 'tesla',
+    hp: 780, dmg: 112, rate: 1.5, range: 5.0, proj: 'bolt',
+    sp: { k: 'stun', ch: 0.20, dur: 1.2 },
+    desc: '{ch} 확률로 적을 1.2초간 행동 불능으로 만든다.' },
+
+  { id: 'cryo', cost: 3350, up: 1510, tier: 3, name: '빙결 터렛', art: 'frost',
+    hp: 780, dmg: 92, rate: 1.6, range: 5.4, proj: 'ice',
+    sp: { k: 'slow', amt: 0.50, dur: 2.5, freeze: 0.12 },
+    desc: '적 이동 속도를 2.5초간 {amt} 감소시키고 {freeze} 확률로 1초간 완전히 정지시킨다.' },
+
+  { id: 'command', cost: 2650, up: 1190, tier: 3, name: '지휘 터렛', art: 'command',
+    hp: 980, dmg: 0, rate: 1.0, range: 4.2, proj: 'none',
+    sp: { k: 'buff', atk: 0.25, spd: 0.15 },
+    desc: '사거리 안 아군 터렛의 공격력을 {atk}, 공격 속도를 {spd} 높인다.' },
+
+  { id: 'orbital', cost: 4400, up: 1980, tier: 3, name: '궤도 저격 터렛', art: 'orbital',
+    hp: 700, dmg: 940, rate: 0.35, range: 11.0, proj: 'beam',
+    desc: '맵 전체를 사거리로 삼고 단발 대미지가 매우 높다.' },
+
+  { id: 'multipierce', cost: 3950, up: 1780, tier: 3, name: '중장 관통 터렛', art: 'pierce',
+    hp: 730, dmg: 196, rate: 1.3, range: 11.0, proj: 'lance',
+    sp: { k: 'pierce', lanes: 1 },
+    desc: '같은 행의 적을 한 발로 모두 관통하며 사거리가 맵 전체에 미친다.' },
+
+  /* ===== 마스터 ===== */
+  { id: 'nova', cost: 9800, up: 4550, tier: 4, name: '초신성 터렛', art: 'nova',
+    hp: 1550, dmg: 540, rate: 0.8, range: 7.5, proj: 'shell',
+    sp: { k: 'splash', r: 2.2, burn: 90, dur: 4 },
+    desc: '착탄 지점 반경 {r}칸에 대미지를 입히고 4초간 초당 {burn} 지속 대미지를 남긴다.' },
+
+  { id: 'judge', cost: 11500, up: 5350, tier: 4, name: '심판 저격 터렛', art: 'sniper',
+    hp: 1300, dmg: 1650, rate: 0.4, range: 11.0, proj: 'beam',
+    sp: { k: 'crit', ch: 0.30, mult: 2.5 },
+    desc: '{ch} 확률로 대미지가 2.5배가 된다.' },
+
+  { id: 'reactor', cost: 7600, up: 3540, tier: 4, name: '융합로 터렛', art: 'command',
+    hp: 2200, dmg: 0, rate: 1.0, range: 5.0, proj: 'none',
+    sp: { k: 'buff', atk: 0.55, spd: 0.30, hp: 0.25 },
+    desc: '사거리 안 아군 터렛의 공격력을 {atk}, 공격 속도를 {spd}, 최대 체력을 {hp} 높인다.' },
+
+  { id: 'aegis', cost: 13000, up: 6050, tier: 4, name: '절대 방벽 터렛', art: 'aegis',
+    hp: 34000, dmg: 230, rate: 1.0, range: 3.2, proj: 'bullet',
+    sp: { k: 'absorb', ratio: 0.35 },
+    desc: '체력이 가장 높고 사거리 안 아군 터렛이 받는 대미지의 {ratio}를 대신 받는다.' },
+
+  { id: 'chrono', cost: 8700, up: 4050, tier: 4, name: '시간 왜곡 터렛', art: 'chrono',
+    hp: 1400, dmg: 270, rate: 1.2, range: 5.4, proj: 'field',
+    sp: { k: 'field', amt: 0.55, dur: 2.0, stun: 0.08 },
+    desc: '사거리 안의 모든 적을 동시에 타격하고 이동 속도를 {amt} 감소, {stun} 확률로 정지시킨다.' }
+];
+
+var TURRET_BY_ID = {};
+for (var ti = 0; ti < TURRETS.length; ti++) TURRET_BY_ID[TURRETS[ti].id] = TURRETS[ti];
+
+/* ---------- 적 10종 ---------- */
+var ENEMIES = [
+  { id: 'scout',      name: '정찰병',     hp: 24,   spd: 1.55, dmg: 5,   rate: 1.2, rng: 0,   armor: 0,    coin: 1.0, size: 0.44, art: 'scout',  from: 1 },
+  { id: 'trooper',    name: '보병',       hp: 38,   spd: 1.00, dmg: 8,  rate: 1.0, rng: 0,   armor: 0.05, coin: 1.2, size: 0.50, art: 'troop',  from: 1 },
+  { id: 'gunner',     name: '사수',       hp: 46,   spd: 0.85, dmg: 7,  rate: 0.9, rng: 2.2, armor: 0,    coin: 1.6, size: 0.50, art: 'gunner', from: 4 },
+  { id: 'charger',    name: '돌격병',     hp: 48,   spd: 2.45, dmg: 12,  rate: 1.5, rng: 0,   armor: 0,    coin: 1.5, size: 0.44, art: 'charge', from: 7 },
+  { id: 'heavy',      name: '중장갑병',   hp: 180,  spd: 0.58, dmg: 19,  rate: 0.7, rng: 0,   armor: 0.28, coin: 2.3, size: 0.62, art: 'heavy',  from: 10 },
+  { id: 'sniperE',    name: '저격수',     hp: 58,   spd: 0.70, dmg: 28,  rate: 0.35, rng: 3.2, armor: 0,   coin: 1.9, size: 0.48, art: 'snipe',  from: 13 },
+  { id: 'shielder',   name: '실드 드론',  hp: 175,  spd: 0.90, dmg: 4,   rate: 0.8, rng: 1.6, armor: 0.10, coin: 2.6, size: 0.52, art: 'shield', from: 17, aura: { k: 'shield', amt: 0.20, r: 1.8 } },
+  { id: 'demolisher', name: '파괴공병',   hp: 330,  spd: 0.55, dmg: 55,  rate: 0.5, rng: 0,   armor: 0.15, coin: 3.1, size: 0.60, art: 'demo',   from: 21 },
+  { id: 'medic',      name: '수리 드론',  hp: 118,  spd: 0.95, dmg: 3,   rate: 0.8, rng: 1.6, armor: 0,    coin: 2.6, size: 0.50, art: 'medic',  from: 26, aura: { k: 'regen', amt: 0.045, r: 1.8 } },
+  { id: 'siege',      name: '공성 유닛',  hp: 1350, spd: 0.34, dmg: 95, rate: 0.55, rng: 1.2, armor: 0.20, coin: 26, size: 0.86, art: 'siege',  from: 999, boss: true, splash: 0.70 }
+];
+var ENEMY_BY_ID = {};
+for (var ei = 0; ei < ENEMIES.length; ei++) ENEMY_BY_ID[ENEMIES[ei].id] = ENEMIES[ei];
+
+/* ---------- 밸런스 상수 ---------- */
+var BAL = {
+  hpBase: 1.087,     // 스테이지당 적 체력 배율
+  dmgBase: 1.063,    // 스테이지당 적 공격력 배율
+  spdBase: 1.0042,   // 스테이지당 적 이동 속도 배율
+  coinBase: 1.086,    // 스테이지당 처치 코인 배율
+  clearBase: 1.086,  // 스테이지당 클리어 보너스 배율
+  coin1: 14,          // 스테이지 1 기준 처치 코인
+  clear1: 720,       // 스테이지 1 클리어 보너스
+  startCoin: 1150,
+  repairRate: 0.30,  // 수리 비용 = 부족 체력 비율 x 투자금 x 0.30
+  sellRate: 0.70,
+  failBonus: 0.70   // 실패 시 클리어 보너스 x 처치율 x 이 값
+};
+
+function pw(b, s) { return Math.pow(b, s - 1); }
+
+/* ---------- 스테이지 정의 ---------- */
+function stageDef(s) {
+  var boss = (s % 10 === 0);
+  var waves = Math.min(12, 3 + Math.floor(s / 5));
+  var per = Math.min(18, 4 + Math.floor(s / 3.4));
+  var gap = Math.max(0.45, 1.40 - s * 0.019);        // 개체 간 간격(초)
+  var waveGap = Math.max(3.5, 8.5 - s * 0.080);      // 웨이브 간 간격(초)
+  var lanesN = s <= 2 ? 2 : (s <= 4 ? 3 : (s <= 7 ? 4 : 5));
+  var order = [2, 1, 3, 0, 4], rows = order.slice(0, lanesN).sort(function (a, c) { return a - c; });
+  var pool = [];
+  for (var i = 0; i < ENEMIES.length; i++) {
+    var e = ENEMIES[i];
+    if (e.boss) continue;
+    if (s >= e.from) pool.push(e.id);
+  }
+  return {
+    stage: s, boss: boss, waves: waves, per: per, gap: gap, waveGap: waveGap, pool: pool, rows: rows,
+    hpMul: pw(BAL.hpBase, s), bossHpMul: pw(1.080, s), dmgMul: pw(BAL.dmgBase, s), spdMul: pw(BAL.spdBase, s),
+    coinPer: Math.max(1, Math.round(BAL.coin1 * pw(BAL.coinBase, s))),
+    clearBonus: Math.round(BAL.clear1 * pw(BAL.clearBase, s))
+  };
+}
+
+/* ---------- 비용 ---------- */
+function buyCost(def) { return def.cost; }
+function upCost(def, lv) { return def.up * lv; }
+function investOf(def, lv) {
+  var c = buyCost(def);
+  for (var i = 1; i < lv; i++) c += upCost(def, i);
+  return c;
+}
+function sellValue(def, lv, hpRatio) {
+  return Math.floor(investOf(def, lv) * BAL.sellRate * Math.max(0, Math.min(1, hpRatio)));
+}
+function repairCost(def, lv, hpRatio) {
+  return Math.max(1, Math.ceil(investOf(def, lv) * (1 - hpRatio) * BAL.repairRate));
+}
+
+/* ---------- 터렛 실효 스탯 ---------- */
+function tStat(def, lv) {
+  return {
+    hp: Math.round(def.hp * lvMul('hp', lv)),
+    dmg: def.dmg * lvMul('dmg', lv),
+    rate: def.rate * lvMul('rate', lv),
+    range: def.range
+  };
+}
+function spVal(def, lv, key) {
+  if (!def.sp || def.sp[key] === undefined) return 0;
+  var base = def.sp[key];
+  if (key === 'n' || key === 'lanes' || key === 'dur') return base;
+  return base * lvMul('sp', lv);
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { TURRETS: TURRETS, ENEMIES: ENEMIES, stageDef: stageDef };
+}
+
+/* ===== src/20_core.js ===== */
+/* ============================================================
+   IRONGRID - 코어 유틸 / 세이브 코덱 / 사운드
+   ============================================================ */
+
+var VERSION = '1.2.1';
+
+var UIFONT = '-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif';
+
+function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function fmtNum(n) {
+  n = Math.floor(n);
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/* ============================================================
+   세이브 코덱
+   포맷: IG1|stage|coins|kills|playSec|cells|checksum
+   cells 항목: r.c.turretId.level.hpPermille  (';' 구분)
+   ============================================================ */
+var SAVE_VER = 'IG1';
+
+function checksum(str) {
+  var h = 5381;
+  for (var i = 0; i < str.length; i++) { h = ((h << 5) + h + str.charCodeAt(i)) & 0xFFFFFFF; }
+  return h.toString(36);
+}
+
+function encodeSave(st) {
+  var cells = [];
+  for (var r = 0; r < GRID_ROWS; r++) {
+    for (var c = 0; c < GRID_COLS; c++) {
+      var t = st.grid[r][c];
+      if (!t) continue;
+      var mx = tStat(TURRET_BY_ID[t.id], t.lv).hp;
+      var per = clamp(Math.round(t.hp / mx * 1000), 0, 1000);
+      cells.push(r + '.' + c + '.' + t.id + '.' + t.lv + '.' + per);
+    }
+  }
+  var body = [SAVE_VER, st.stage, Math.floor(st.coins), Math.floor(st.kills),
+              Math.floor(st.playSec), cells.join(';')].join('|');
+  return body + '|' + checksum(body);
+}
+
+function decodeSave(str) {
+  if (typeof str !== 'string') return { ok: false, why: '형식 오류' };
+  str = str.trim();
+  var p = str.split('|');
+  if (p.length !== 7) return { ok: false, why: '형식 오류' };
+  if (p[0] !== SAVE_VER) return { ok: false, why: '버전 불일치' };
+  var body = p.slice(0, 6).join('|');
+  if (checksum(body) !== p[6]) return { ok: false, why: '데이터 손상' };
+  var stage = parseInt(p[1], 10), coins = parseInt(p[2], 10);
+  var kills = parseInt(p[3], 10), playSec = parseInt(p[4], 10);
+  if (!isFinite(stage) || !isFinite(coins) || !isFinite(kills) || !isFinite(playSec))
+    return { ok: false, why: '데이터 손상' };
+  stage = clamp(stage, 1, MAX_STAGE); coins = Math.max(0, coins);
+  kills = Math.max(0, kills); playSec = Math.max(0, playSec);
+
+  var grid = [];
+  for (var r = 0; r < GRID_ROWS; r++) { grid.push([]); for (var c = 0; c < GRID_COLS; c++) grid[r].push(null); }
+
+  if (p[5].length) {
+    var items = p[5].split(';');
+    for (var i = 0; i < items.length; i++) {
+      var f = items[i].split('.');
+      if (f.length !== 5) return { ok: false, why: '데이터 손상' };
+      var rr = parseInt(f[0], 10), cc = parseInt(f[1], 10);
+      var id = f[2], lv = parseInt(f[3], 10), per = parseInt(f[4], 10);
+      var def = TURRET_BY_ID[id];
+      if (!def) return { ok: false, why: '알 수 없는 터렛' };
+      if (!(rr >= 0 && rr < GRID_ROWS && cc >= 0 && cc < GRID_COLS)) return { ok: false, why: '좌표 오류' };
+      if (!(lv >= 1 && lv <= MAX_LEVEL)) return { ok: false, why: '레벨 오류' };
+      if (!(per >= 0 && per <= 1000)) return { ok: false, why: '체력 오류' };
+      if (grid[rr][cc]) return { ok: false, why: '좌표 중복' };
+      var mx = tStat(def, lv).hp;
+      grid[rr][cc] = { id: id, lv: lv, hp: Math.max(1, Math.round(mx * per / 1000)) };
+    }
+  }
+  return { ok: true, state: { stage: stage, coins: coins, kills: kills, playSec: playSec, grid: grid } };
+}
+
+function newState() {
+  var grid = [];
+  for (var r = 0; r < GRID_ROWS; r++) { grid.push([]); for (var c = 0; c < GRID_COLS; c++) grid[r].push(null); }
+  return { stage: 1, coins: BAL.startCoin, kills: 0, playSec: 0, grid: grid };
+}
+
+/* ============================================================
+   사운드 (Web Audio API 절차적 합성)
+   ============================================================ */
+var Snd = {
+  ctx: null, master: null, musicGain: null, sfxGain: null,
+  on: true, musicOn: true, budget: 0, lastT: 0,
+
+  init: function () {
+    if (this.ctx) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain(); this.master.gain.value = 0.85;
+    this.master.connect(this.ctx.destination);
+    this.sfxGain = this.ctx.createGain(); this.sfxGain.gain.value = 0.55; this.sfxGain.connect(this.master);
+    this.musicGain = this.ctx.createGain(); this.musicGain.gain.value = 0.0; this.musicGain.connect(this.master);
+    this.noiseBuf = this._noise(1.0);
+    this.startMusic();
+  },
+  resume: function () { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+  _noise: function (sec) {
+    var n = Math.floor(this.ctx.sampleRate * sec), b = this.ctx.createBuffer(1, n, this.ctx.sampleRate), d = b.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  },
+  _gate: function () {
+    if (!this.on || !this.ctx) return false;
+    var t = this.ctx.currentTime;
+    if (t - this.lastT > 0.05) { this.budget = 7; this.lastT = t; }
+    if (this.budget <= 0) return false;
+    this.budget--; return true;
+  },
+  tone: function (o) {
+    if (!this.ctx) return;
+    var t = this.ctx.currentTime, osc = this.ctx.createOscillator(), g = this.ctx.createGain();
+    osc.type = o.type || 'square';
+    osc.frequency.setValueAtTime(o.f0, t);
+    if (o.f1 !== undefined) osc.frequency.exponentialRampToValueAtTime(Math.max(1, o.f1), t + o.d);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(o.v || 0.2, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + o.d);
+    osc.connect(g);
+    if (o.filt) { var f = this.ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = o.filt; g.connect(f); f.connect(this.sfxGain); }
+    else g.connect(this.sfxGain);
+    osc.start(t); osc.stop(t + o.d + 0.02);
+  },
+  noise: function (o) {
+    if (!this.ctx) return;
+    var t = this.ctx.currentTime, s = this.ctx.createBufferSource(); s.buffer = this.noiseBuf;
+    var f = this.ctx.createBiquadFilter(); f.type = o.type || 'bandpass';
+    f.frequency.setValueAtTime(o.f0, t);
+    if (o.f1 !== undefined) f.frequency.exponentialRampToValueAtTime(Math.max(20, o.f1), t + o.d);
+    f.Q.value = o.q || 1;
+    var g = this.ctx.createGain();
+    g.gain.setValueAtTime(o.v || 0.25, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + o.d);
+    s.connect(f); f.connect(g); g.connect(this.sfxGain);
+    s.start(t); s.stop(t + o.d + 0.02);
+  },
+
+  shoot: function (kind, tier) {
+    if (!this._gate()) return;
+    var p = 1 + tier * 0.16;
+    switch (kind) {
+      case 'beam':  this.tone({ type: 'sawtooth', f0: 900 * p, f1: 180, d: 0.12, v: 0.16, filt: 3000 }); break;
+      case 'shell': this.noise({ f0: 700, f1: 160, d: 0.13, v: 0.20, q: 0.8 }); break;
+      case 'ice':   this.tone({ type: 'triangle', f0: 1400 * p, f1: 700, d: 0.09, v: 0.13 }); break;
+      case 'spark':
+      case 'bolt':  this.noise({ type: 'highpass', f0: 2200, f1: 900, d: 0.09, v: 0.14 }); break;
+      case 'flame': this.noise({ f0: 420, f1: 240, d: 0.10, v: 0.10, q: 0.6 }); break;
+      case 'lance': this.tone({ type: 'sawtooth', f0: 620 * p, f1: 240, d: 0.10, v: 0.15, filt: 2600 }); break;
+      case 'acid':  this.tone({ type: 'square', f0: 380, f1: 180, d: 0.09, v: 0.11 }); break;
+      case 'wave':  this.tone({ type: 'sine', f0: 260, f1: 90, d: 0.16, v: 0.20 }); break;
+      case 'field': this.tone({ type: 'sine', f0: 180, f1: 420, d: 0.20, v: 0.14 }); break;
+      default:      this.tone({ type: 'square', f0: 500 * p, f1: 260, d: 0.05, v: 0.11, filt: 4200 });
+    }
+  },
+  hit: function () { if (this._gate()) this.noise({ f0: 1600, f1: 500, d: 0.05, v: 0.10 }); },
+  kill: function (big) {
+    if (!this._gate()) return;
+    this.noise({ f0: big ? 380 : 900, f1: big ? 70 : 180, d: big ? 0.55 : 0.18, v: big ? 0.4 : 0.2, q: 0.6 });
+    if (big) this.tone({ type: 'sine', f0: 130, f1: 40, d: 0.7, v: 0.3 });
+  },
+  ui: function (kind) {
+    if (!this.ctx || !this.on) return;
+    if (kind === 'ok') { this.tone({ type: 'triangle', f0: 620, f1: 940, d: 0.10, v: 0.22 }); }
+    else if (kind === 'no') { this.tone({ type: 'square', f0: 220, f1: 120, d: 0.14, v: 0.18 }); }
+    else if (kind === 'build') { this.tone({ type: 'triangle', f0: 320, f1: 760, d: 0.16, v: 0.24 }); this.noise({ f0: 900, f1: 300, d: 0.12, v: 0.14 }); }
+    else if (kind === 'up') { this.tone({ type: 'triangle', f0: 520, f1: 1180, d: 0.24, v: 0.26 }); }
+    else if (kind === 'sell') { this.tone({ type: 'triangle', f0: 900, f1: 380, d: 0.18, v: 0.20 }); }
+    else if (kind === 'clear') { var self = this, n = [523, 659, 784, 1046]; n.forEach(function (f, i) { setTimeout(function () { self.tone({ type: 'triangle', f0: f, d: 0.30, v: 0.24 }); }, i * 110); }); }
+    else if (kind === 'fail') { var s2 = this, m = [392, 330, 262, 196]; m.forEach(function (f, i) { setTimeout(function () { s2.tone({ type: 'sawtooth', f0: f, d: 0.36, v: 0.18, filt: 1400 }); }, i * 150); }); }
+    else this.tone({ type: 'square', f0: 420, f1: 420, d: 0.03, v: 0.10 });
+  },
+
+  /* ---------- 배경음악 (절차적 시퀀서) ----------
+     84BPM, 8분음표 32스텝 = 4마디 루프. 베이스 + 패드 + 아르페지오. */
+  MU_BARS: [
+    { bass: 110.00, pad: [220.00, 261.63], arp: [440.00, 523.25, 659.25, 523.25] },
+    { bass: 87.31,  pad: [174.61, 261.63], arp: [349.23, 523.25, 698.46, 440.00] },
+    { bass: 130.81, pad: [196.00, 261.63], arp: [392.00, 523.25, 587.33, 493.88] },
+    { bass: 98.00,  pad: [196.00, 246.94], arp: [392.00, 493.88, 587.33, 440.00] }
+  ],
+  muStep: 0, muNext: 0, muTimer: null, muInt: 0, mBus: null,
+
+  _mnote: function (f, t, dur, type, vol, cut, atk) {
+    var c = this.ctx, o = c.createOscillator(), g = c.createGain(), tail = g;
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    atk = atk || 0.014;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + atk);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g);
+    if (cut) { var fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = cut; g.connect(fl); tail = fl; }
+    tail.connect(this.mBus);
+    o.start(t); o.stop(t + dur + 0.04);
+  },
+  _mperc: function (t, kick) {
+    var c = this.ctx;
+    if (kick) {
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(126, t); o.frequency.exponentialRampToValueAtTime(44, t + 0.12);
+      g.gain.setValueAtTime(0.30, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      o.connect(g); g.connect(this.mBus); o.start(t); o.stop(t + 0.2);
+    } else {
+      var sN = c.createBufferSource(); sN.buffer = this.noiseBuf;
+      var f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 6800;
+      var g2 = c.createGain();
+      g2.gain.setValueAtTime(0.075, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
+      sN.connect(f); f.connect(g2); g2.connect(this.mBus); sN.start(t); sN.stop(t + 0.07);
+    }
+  },
+  _mstep: function (i, t) {
+    var B = this.MU_BARS[(i >> 3) & 3], k = i & 7, self = this;
+    if (k === 0) {
+      this._mnote(B.bass, t, 1.85, 'sawtooth', 0.17, 340, 0.02);
+      B.pad.forEach(function (f) { self._mnote(f, t, 2.75, 'triangle', 0.052, 950, 0.55); });
+    }
+    if (k === 4) this._mnote(B.bass * 1.5, t, 0.85, 'sawtooth', 0.11, 320, 0.02);
+    if (k === 2 || k === 3 || k === 5 || k === 6 || k === 7)
+      this._mnote(B.arp[(i * 3 + (k & 1)) & 3], t, 0.46, 'triangle', 0.062, 2800, 0.006);
+    if (this.muInt) {
+      if (k === 0 || k === 4) this._mperc(t, 1);
+      if (k & 1) this._mperc(t, 0);
+    }
+  },
+  _msched: function () {
+    if (!this.ctx || !this.musicOn) return;
+    var now = this.ctx.currentTime, spb = 60 / 84 / 2;
+    if (this.muNext < now) this.muNext = now + 0.08;
+    while (this.muNext < now + 0.45) {
+      this._mstep(this.muStep, this.muNext);
+      this.muStep = (this.muStep + 1) & 31;
+      this.muNext += spb;
+    }
+  },
+  startMusic: function () {
+    if (!this.ctx || this.mBus) return;
+    var c = this.ctx, self = this;
+    this.mBus = c.createGain(); this.mBus.gain.value = 1;
+    this.mBus.connect(this.musicGain);
+    var d = c.createDelay(1.0); d.delayTime.value = 0.303;
+    var fb = c.createGain(); fb.gain.value = 0.27;
+    var wet = c.createGain(); wet.gain.value = 0.30;
+    var hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 320;
+    this.mBus.connect(d); d.connect(fb); fb.connect(d); d.connect(hp); hp.connect(wet); wet.connect(this.musicGain);
+    this.muNext = 0; this.muStep = 0;
+    this.muTimer = setInterval(function () { self._msched(); }, 110);
+    this.setMusic(this.musicOn);
+  },
+  setMusic: function (v) {
+    this.musicOn = v;
+    if (this.musicGain && this.ctx)
+      this.musicGain.gain.setTargetAtTime(v ? 0.62 : 0.0, this.ctx.currentTime, 0.35);
+    if (v) this.muNext = 0;
+  },
+  setIntensity: function (v) { this.muInt = v ? 1 : 0; }
+};
+
+/* ===== src/30_sprites.js ===== */
+/* ============================================================
+   IRONGRID - 스프라이트 프리렌더 (성능: 최초 1회만 그림)
+   ============================================================ */
+var SPR = 128, HS = 64, SPRPX = 256;
+var SPRITES = { turret: {}, barrel: {}, enemy: {} };
+
+function mkC(w, h) { var c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function mkS() { var c = mkC(SPRPX, SPRPX), g = c.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0); return c; }
+function rr(x, y, w, h, r, g) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function poly(g, pts) { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (var i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]); g.closePath(); }
+function lg(g, x0, y0, x1, y1, stops) { var q = g.createLinearGradient(x0, y0, x1, y1); for (var i = 0; i < stops.length; i++) q.addColorStop(stops[i][0], stops[i][1]); return q; }
+function rg(g, x, y, r0, r1, stops) { var q = g.createRadialGradient(x, y, r0, x, y, r1); for (var i = 0; i < stops.length; i++) q.addColorStop(stops[i][0], stops[i][1]); return q; }
+
+var STEEL = { d: '#1b222d', m: '#3a4553', l: '#6c7c90', h: '#a4b4c7', x: '#d2dde9' };
+
+/* 공통 받침대 */
+function drawPad(g, tier) {
+  var T = TIERS[tier], R = 44;
+  g.save();
+  g.translate(HS, HS);
+  var pts = [];
+  for (var i = 0; i < 8; i++) { var a = Math.PI / 8 + i * Math.PI / 4; pts.push([Math.cos(a) * R, Math.sin(a) * R]); }
+  poly(g, pts);
+  g.fillStyle = lg(g, -R, -R, R, R, [[0, STEEL.m], [0.45, STEEL.d], [1, '#0d1219']]);
+  g.fill();
+  g.lineWidth = 3; g.strokeStyle = T.col; g.globalAlpha = 0.9; g.stroke(); g.globalAlpha = 1;
+  g.lineWidth = 1; g.strokeStyle = 'rgba(255,255,255,.10)';
+  poly(g, pts.map(function (p) { return [p[0] * 0.82, p[1] * 0.82]; })); g.stroke();
+  /* 볼트 */
+  for (i = 0; i < 4; i++) {
+    var a2 = Math.PI / 4 + i * Math.PI / 2, bx = Math.cos(a2) * 34, by = Math.sin(a2) * 34;
+    g.beginPath(); g.arc(bx, by, 3.1, 0, 6.284);
+    g.fillStyle = STEEL.l; g.fill();
+    g.beginPath(); g.arc(bx - 0.7, by - 0.7, 1.5, 0, 6.284); g.fillStyle = STEEL.h; g.fill();
+  }
+  /* 티어 발광 */
+  g.globalCompositeOperation = 'lighter';
+  g.beginPath(); g.arc(0, 0, 58, 0, 6.284);
+  g.fillStyle = rg(g, 0, 0, 4, 58, [[0, T.col + '55'], [0.55, T.col + '2e'], [1, 'rgba(0,0,0,0)']]); g.fill();
+  g.globalCompositeOperation = 'source-over';
+  g.restore();
+}
+
+function metal(g, x, y, w, h, r) {
+  rr(x, y, w, h, r, g);
+  g.fillStyle = lg(g, x, y, x, y + h, [[0, STEEL.l], [0.35, STEEL.m], [1, '#12171f']]); g.fill();
+  g.lineWidth = 1.4; g.strokeStyle = 'rgba(0,0,0,.55)'; g.stroke();
+  rr(x + 1.6, y + 1.6, w - 3.2, h * 0.34, r * 0.6, g);
+  g.fillStyle = 'rgba(255,255,255,.13)'; g.fill();
+}
+
+/* ---------- 터렛 본체 ---------- */
+function drawTurretBody(g, art, tier) {
+  var T = TIERS[tier];
+  g.save(); g.translate(HS, HS);
+  switch (art) {
+    case 'wall':
+      metal(g, -34, -30, 68, 60, 7);
+      for (var i = -1; i <= 1; i++) { metal(g, -30, -24 + i * 18, 60, 13, 3); }
+      g.fillStyle = T.col; g.globalAlpha = .85;
+      rr(-8, -6, 16, 12, 3, g); g.fill(); g.globalAlpha = 1;
+      break;
+    case 'gatling':
+      metal(g, -26, -22, 52, 44, 9);
+      g.beginPath(); g.arc(0, 0, 15, 0, 6.284);
+      g.fillStyle = lg(g, -15, -15, 15, 15, [[0, STEEL.h], [1, STEEL.d]]); g.fill();
+      g.lineWidth = 2; g.strokeStyle = STEEL.d; g.stroke();
+      break;
+    case 'flame':
+      metal(g, -28, -24, 46, 48, 8);
+      g.beginPath(); g.arc(-14, 0, 13, 0, 6.284); g.fillStyle = lg(g, -26, -12, -2, 12, [[0, '#8a4a22'], [1, '#3a1d0e']]); g.fill();
+      g.lineWidth = 1.5; g.strokeStyle = '#1a0e07'; g.stroke();
+      break;
+    case 'sniper':
+      metal(g, -24, -18, 46, 36, 7);
+      g.beginPath(); g.arc(2, 0, 12, 0, 6.284); g.fillStyle = STEEL.m; g.fill();
+      g.beginPath(); g.arc(2, 0, 5.5, 0, 6.284); g.fillStyle = T.lit; g.fill();
+      break;
+    case 'mortar':
+      metal(g, -26, -26, 52, 52, 10);
+      g.beginPath(); g.arc(0, 0, 17, 0, 6.284); g.fillStyle = lg(g, -17, -17, 17, 17, [[0, STEEL.l], [1, '#10151c']]); g.fill();
+      g.beginPath(); g.arc(0, 0, 9, 0, 6.284); g.fillStyle = '#0a0d12'; g.fill();
+      break;
+    case 'frost':
+      metal(g, -24, -24, 48, 48, 12);
+      for (var k = 0; k < 3; k++) {
+        var a = -0.7 + k * 0.7;
+        poly(g, [[Math.cos(a) * 6, Math.sin(a) * 6], [Math.cos(a) * 26, Math.sin(a) * 26 - 5], [Math.cos(a) * 26, Math.sin(a) * 26 + 5]]);
+        g.fillStyle = T.lit; g.globalAlpha = .55; g.fill(); g.globalAlpha = 1;
+      }
+      g.beginPath(); g.arc(0, 0, 11, 0, 6.284); g.fillStyle = rg(g, 0, 0, 1, 11, [[0, '#ffffff'], [1, T.col]]); g.fill();
+      break;
+    case 'arc': case 'tesla':
+      metal(g, -24, -20, 48, 40, 9);
+      g.lineWidth = 2.4; g.strokeStyle = STEEL.h;
+      for (var t2 = 0; t2 < 3; t2++) { g.beginPath(); g.arc(0, 0, 8 + t2 * 5, 0, 6.284); g.stroke(); }
+      g.beginPath(); g.arc(0, 0, 7, 0, 6.284);
+      g.fillStyle = rg(g, 0, 0, 1, 7, [[0, '#ffffff'], [1, T.col]]); g.fill();
+      break;
+    case 'repair':
+      metal(g, -25, -25, 50, 50, 13);
+      g.beginPath(); g.arc(0, 0, 15, 0, 6.284); g.fillStyle = STEEL.d; g.fill();
+      g.lineWidth = 3; g.strokeStyle = T.col; g.stroke();
+      break;
+    case 'pierce':
+      metal(g, -28, -16, 56, 32, 6);
+      poly(g, [[-30, -7], [16, -7], [16, 7], [-30, 7]]); g.fillStyle = STEEL.d; g.fill();
+      break;
+    case 'shock':
+      metal(g, -24, -24, 44, 48, 9);
+      g.beginPath(); g.ellipse(4, 0, 12, 20, 0, 0, 6.284);
+      g.fillStyle = lg(g, -8, 0, 16, 0, [[0, STEEL.d], [1, T.col]]); g.globalAlpha = .85; g.fill(); g.globalAlpha = 1;
+      break;
+    case 'corrode':
+      metal(g, -26, -22, 46, 44, 8);
+      g.beginPath(); g.arc(-10, -4, 11, 0, 6.284); g.fillStyle = lg(g, -20, -14, 0, 6, [[0, '#4f7a2a'], [1, '#1d2c10']]); g.fill();
+      break;
+    case 'command':
+      metal(g, -26, -26, 52, 52, 11);
+      g.beginPath(); g.arc(0, 0, 16, 0, 6.284); g.fillStyle = STEEL.d; g.fill();
+      g.lineWidth = 2; g.strokeStyle = T.col;
+      g.beginPath(); g.arc(0, 0, 21, -0.7, 0.7); g.stroke();
+      g.beginPath(); g.arc(0, 0, 21, Math.PI - 0.7, Math.PI + 0.7); g.stroke();
+      break;
+    case 'orbital':
+      metal(g, -26, -26, 52, 52, 14);
+      g.beginPath(); g.arc(0, 0, 18, 0, 6.284); g.fillStyle = lg(g, -18, -18, 18, 18, [[0, STEEL.m], [1, '#0b1017']]); g.fill();
+      g.lineWidth = 2.2; g.strokeStyle = T.col; g.stroke();
+      g.beginPath(); g.arc(0, 0, 7, 0, 6.284); g.fillStyle = rg(g, 0, 0, 1, 7, [[0, '#fff'], [1, T.col]]); g.fill();
+      break;
+    case 'nova':
+      metal(g, -28, -28, 56, 56, 12);
+      for (var n = 0; n < 6; n++) {
+        var na = n * Math.PI / 3;
+        g.save(); g.rotate(na); rr(12, -3.5, 16, 7, 2, g); g.fillStyle = STEEL.l; g.fill(); g.restore();
+      }
+      g.beginPath(); g.arc(0, 0, 14, 0, 6.284);
+      g.fillStyle = rg(g, 0, 0, 2, 14, [[0, '#ffffff'], [0.5, T.lit], [1, T.col]]); g.fill();
+      break;
+    case 'aegis':
+      metal(g, -32, -30, 64, 60, 10);
+      g.beginPath(); g.arc(0, 4, 24, Math.PI, 0); g.closePath();
+      g.fillStyle = lg(g, 0, -20, 0, 6, [[0, T.lit + 'cc'], [1, T.dark]]); g.fill();
+      g.lineWidth = 2.4; g.strokeStyle = T.col; g.stroke();
+      break;
+    case 'chrono':
+      metal(g, -24, -24, 48, 48, 14);
+      g.lineWidth = 2.6;
+      for (var c2 = 0; c2 < 3; c2++) {
+        g.strokeStyle = c2 === 1 ? T.lit : T.col; g.globalAlpha = .9 - c2 * .18;
+        g.beginPath(); g.ellipse(0, 0, 20 - c2 * 5, 10 - c2 * 2.5, c2 * 1.05, 0, 6.284); g.stroke();
+      }
+      g.globalAlpha = 1;
+      g.beginPath(); g.arc(0, 0, 5.5, 0, 6.284); g.fillStyle = '#fff'; g.fill();
+      break;
+  }
+  g.restore();
+}
+
+/* ---------- 포신 (오른쪽 0도 기준) ---------- */
+function drawBarrel(g, art, tier) {
+  var T = TIERS[tier];
+  g.save(); g.translate(HS, HS);
+  function tube(len, w, off) {
+    rr(6, -w / 2 + (off || 0), len, w, w * 0.35, g);
+    g.fillStyle = lg(g, 0, -w / 2 + (off || 0), 0, w / 2 + (off || 0), [[0, STEEL.h], [0.4, STEEL.m], [1, '#0e131a']]); g.fill();
+    g.lineWidth = 1.1; g.strokeStyle = 'rgba(0,0,0,.6)'; g.stroke();
+  }
+  switch (art) {
+    case 'gatling': tube(30, 6, -7); tube(32, 6, 0); tube(30, 6, 7); break;
+    case 'wall': tube(16, 12); break;
+    case 'flame': tube(24, 12); g.beginPath(); g.arc(30, 0, 7, 0, 6.284); g.fillStyle = '#d8622a'; g.fill(); break;
+    case 'sniper': tube(46, 8); rr(14, -9, 14, 6, 2, g); g.fillStyle = STEEL.l; g.fill();
+      g.beginPath(); g.arc(52, 0, 3.4, 0, 6.284); g.fillStyle = T.lit; g.fill(); break;
+    case 'mortar': tube(26, 18); g.beginPath(); g.arc(31, 0, 9, 0, 6.284); g.fillStyle = '#080b10'; g.fill(); break;
+    case 'frost': tube(22, 9, -6); tube(22, 9, 6);
+      g.beginPath(); g.arc(29, -6, 4, 0, 6.284); g.arc(29, 6, 4, 0, 6.284); g.fillStyle = T.lit; g.fill(); break;
+    case 'arc': case 'tesla': tube(20, 8);
+      g.beginPath(); g.arc(28, 0, 7, 0, 6.284);
+      g.fillStyle = rg(g, 28, 0, 1, 7, [[0, '#fff'], [1, T.col]]); g.fill(); break;
+    case 'pierce': tube(44, 9); poly(g, [[50, -6], [62, 0], [50, 6]]); g.fillStyle = T.lit; g.fill(); break;
+    case 'shock': g.beginPath(); g.ellipse(20, 0, 8, 17, 0, 0, 6.284);
+      g.fillStyle = lg(g, 12, 0, 28, 0, [[0, STEEL.m], [1, T.col]]); g.fill();
+      g.lineWidth = 1.6; g.strokeStyle = STEEL.d; g.stroke(); break;
+    case 'corrode': tube(28, 11); g.beginPath(); g.arc(35, 0, 6, 0, 6.284); g.fillStyle = '#7bd44a'; g.fill(); break;
+    case 'command': rr(6, -2, 30, 4, 2, g); g.fillStyle = STEEL.l; g.fill();
+      g.beginPath(); g.arc(38, 0, 5, 0, 6.284); g.fillStyle = T.lit; g.fill(); break;
+    case 'orbital': tube(34, 10); rr(20, -13, 8, 26, 3, g); g.fillStyle = STEEL.m; g.fill();
+      g.beginPath(); g.arc(42, 0, 5, 0, 6.284); g.fillStyle = T.lit; g.fill(); break;
+    case 'nova': tube(30, 20); g.beginPath(); g.arc(36, 0, 11, 0, 6.284);
+      g.fillStyle = rg(g, 36, 0, 1, 11, [[0, '#fff'], [1, T.col]]); g.fill(); break;
+    case 'aegis': tube(18, 14); break;
+    default: tube(26, 8);
+  }
+  g.restore();
+}
+
+/* ---------- 적 ---------- */
+function drawEnemy(g, art) {
+  var body = '#3b4557', edge = '#1a2029', lite = '#6c7b92', eye = '#ff6a44';
+  g.save(); g.translate(HS, HS);
+  function chassis(w, h, r) {
+    poly(g, [[-w / 2, -h / 2], [w / 2 - r, -h / 2], [w / 2, 0], [w / 2 - r, h / 2], [-w / 2, h / 2], [-w / 2 - r * .6, 0]]);
+    g.fillStyle = lg(g, 0, -h / 2, 0, h / 2, [[0, lite], [0.4, body], [1, edge]]); g.fill();
+    g.lineWidth = 2; g.strokeStyle = '#0d1117'; g.stroke();
+  }
+  function core(x, r, c) {
+    g.beginPath(); g.arc(x, 0, r, 0, 6.284);
+    g.fillStyle = rg(g, x, 0, 0.5, r, [[0, '#fff'], [0.35, c || eye], [1, 'rgba(0,0,0,0)']]); g.fill();
+  }
+  switch (art) {
+    case 'scout': chassis(40, 22, 8); core(-13, 6);
+      g.fillStyle = lite; rr(4, -12, 12, 5, 2, g); g.fill(); rr(4, 7, 12, 5, 2, g); g.fill(); break;
+    case 'troop': chassis(46, 30, 9); core(-15, 7);
+      metal(g, 2, -13, 16, 26, 4); break;
+    case 'gunner': chassis(46, 28, 8); core(-14, 6);
+      g.fillStyle = STEEL.m; rr(-30, -5, 26, 10, 3, g); g.fill();
+      g.fillStyle = '#0b0f15'; rr(-34, -3.5, 8, 7, 2, g); g.fill(); break;
+    case 'charge': poly(g, [[-30, 0], [-10, -14], [24, -10], [24, 10], [-10, 14]]);
+      g.fillStyle = lg(g, 0, -14, 0, 14, [[0, '#7d5a64'], [0.4, '#4a343e'], [1, '#241820']]); g.fill();
+      g.lineWidth = 2; g.strokeStyle = '#0d1117'; g.stroke(); core(-16, 7, '#ff8a2a'); break;
+    case 'heavy': chassis(56, 42, 10); core(-19, 8);
+      metal(g, -6, -19, 22, 38, 5);
+      g.fillStyle = '#4a5568'; rr(-24, -22, 44, 6, 3, g); g.fill(); rr(-24, 16, 44, 6, 3, g); g.fill(); break;
+    case 'snipe': chassis(40, 24, 7); core(-13, 6, '#ff3a6a');
+      g.fillStyle = STEEL.m; rr(-40, -3, 38, 6, 2, g); g.fill(); break;
+    case 'shield': g.beginPath(); g.arc(0, 0, 19, 0, 6.284);
+      g.fillStyle = lg(g, 0, -19, 0, 19, [[0, '#51719b'], [1, '#1c2637']]); g.fill();
+      g.lineWidth = 2.4; g.strokeStyle = '#6fa8e0'; g.stroke();
+      g.lineWidth = 2; g.globalAlpha = .55; g.beginPath(); g.arc(0, 0, 27, 0, 6.284); g.stroke(); g.globalAlpha = 1;
+      core(0, 7, '#8fd0ff'); break;
+    case 'demo': chassis(54, 40, 9); core(-18, 8, '#ffb02a');
+      g.save(); g.translate(-30, 0);
+      poly(g, [[0, -11], [-20, 0], [0, 11]]); g.fillStyle = lg(g, -20, 0, 0, 0, [[0, '#8d6a2a'], [1, '#3a2c12']]); g.fill();
+      g.lineWidth = 1.6; g.strokeStyle = '#0d1117'; g.stroke(); g.restore();
+      metal(g, 4, -14, 18, 28, 4); break;
+    case 'medic': g.beginPath(); g.arc(0, 0, 18, 0, 6.284);
+      g.fillStyle = lg(g, 0, -18, 0, 18, [[0, '#4f8265'], [1, '#182720']]); g.fill();
+      g.lineWidth = 2.4; g.strokeStyle = '#63d69a'; g.stroke();
+      g.fillStyle = '#63d69a'; rr(-8, -2.5, 16, 5, 2, g); g.fill();
+      g.save(); g.rotate(Math.PI / 3); rr(-8, -2.5, 16, 5, 2, g); g.fill(); g.restore();
+      break;
+    case 'siege':
+      poly(g, [[-40, -26], [24, -34], [40, -12], [40, 12], [24, 34], [-40, 26], [-48, 0]]);
+      g.fillStyle = lg(g, 0, -34, 0, 34, [[0, '#8a6a74'], [0.35, '#4a3841'], [1, '#241a1f']]); g.fill();
+      g.lineWidth = 3; g.strokeStyle = '#080a0e'; g.stroke();
+      metal(g, -14, -22, 32, 44, 6);
+      g.fillStyle = '#7a4a2a'; rr(20, -8, 30, 16, 4, g); g.fill();
+      core(-26, 12, '#ff4a2a'); core(4, 8, '#ffb02a'); break;
+  }
+  g.restore();
+}
+
+function buildAura(col) {
+  var c = mkC(SPRPX, SPRPX), g = c.getContext('2d');
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.beginPath(); g.arc(HS, HS, 62, 0, 6.284);
+  g.fillStyle = rg(g, HS, HS, 26, 62, [[0, 'rgba(0,0,0,0)'], [0.72, col], [0.92, col], [1, 'rgba(0,0,0,0)']]);
+  g.fill();
+  return c;
+}
+
+function buildSprites() {
+  SPRITES.aura = buildAura('rgba(120,214,255,.75)');
+  for (var i = 0; i < TURRETS.length; i++) {
+    var d = TURRETS[i], key = d.art + '_' + d.tier;
+    if (!SPRITES.turret[key]) {
+      var c1 = mkS(), g1 = c1.getContext('2d');
+      drawPad(g1, d.tier); drawTurretBody(g1, d.art, d.tier);
+      SPRITES.turret[key] = c1;
+      var c2 = mkS(), g2 = c2.getContext('2d');
+      drawBarrel(g2, d.art, d.tier);
+      SPRITES.barrel[key] = c2;
+    }
+  }
+  for (var j = 0; j < ENEMIES.length; j++) {
+    var e = ENEMIES[j];
+    if (SPRITES.enemy[e.art]) continue;
+    var c3 = mkS(), g3 = c3.getContext('2d');
+    drawEnemy(g3, e.art);
+    SPRITES.enemy[e.art] = c3;
+  }
+}
+
+/* ===== src/40_sim.js ===== */
+/* ============================================================
+   IRONGRID - 전투 시뮬레이션 (순수 로직)
+   ============================================================ */
+
+var WALL_X = -0.12;
+var TIME_LIMIT_BASE = 150, TIME_LIMIT_PER = 2.0, TIME_LIMIT_MAX = 240;
+
+var PROJ_SPEED = { bullet: 22, shell: 12, ice: 16, acid: 15, flame: 13, lance: 26, spark: 20 };
+var INSTANT = { beam: 1, bolt: 1, wave: 1, field: 1, none: 1 };
+
+var SPAWN_W = { scout: 3, trooper: 3, gunner: 2, charger: 2, heavy: 2, sniperE: 1.5, shielder: 1, demolisher: 1.2, medic: 1 };
+
+/* FX 훅 - 렌더 계층에서 덮어씀. 헤드리스에서는 무동작 */
+var FX = {
+  muzzle: function () {}, impact: function () {}, beam: function () {}, ring: function () {},
+  dmg: function () {}, boom: function () {}, shake: function () {}, stop: function () {},
+  heal: function () {}, spawn: function () {}
+};
+
+/* 지원·광역 능력은 행에 상관없이 작동한다 */
+function isAreaTurret(def) {
+  return !!(def.sp && (def.sp.k === 'heal' || def.sp.k === 'buff' || def.sp.k === 'absorb' || def.sp.k === 'field'));
+}
+
+function timeLimitOf(s) { return Math.min(TIME_LIMIT_MAX, TIME_LIMIT_BASE + s * TIME_LIMIT_PER); }
+
+function bossCountOf(s) { return s <= 20 ? 1 : (s <= 40 ? 2 : 3); }
+
+/* ---------- 전투 생성 ---------- */
+function makeBattle(state, seed) {
+  var sd = stageDef(state.stage);
+  var rng = mulberry32(seed >>> 0);
+  var b = {
+    sd: sd, rng: rng, t: 0, limit: timeLimitOf(state.stage),
+    turrets: [], enemies: [], projs: [], auras: [],
+    queue: [], qi: 0, total: 0,
+    kills: 0, coins: 0, status: 'run', reason: '',
+    state: state
+  };
+
+  for (var r = 0; r < GRID_ROWS; r++) for (var c = 0; c < GRID_COLS; c++) {
+    var g = state.grid[r][c];
+    if (!g) continue;
+    var def = TURRET_BY_ID[g.id], st = tStat(def, g.lv);
+    b.turrets.push({
+      ref: g, def: def, lv: g.lv, r: r, c: c, x: c + 0.5, y: r + 0.5,
+      base: st, maxHp: st.hp, hp: Math.min(g.hp, st.hp),
+      atkMul: 1, spdMul: 1, hpMul: 1,
+      cd: rng() * 0.4, ang: 0, dead: false, flash: 0, recoil: 0, spin: 0
+    });
+  }
+  applyBuffs(b);
+
+  /* 스폰 큐 */
+  var pool = sd.pool, wsum = 0, i;
+  for (i = 0; i < pool.length; i++) wsum += (SPAWN_W[pool[i]] || 1);
+  var t = 2.0;
+  for (var w = 0; w < sd.waves; w++) {
+    for (var k = 0; k < sd.per; k++) {
+      var pick = rng() * wsum, acc = 0, id = pool[0];
+      for (i = 0; i < pool.length; i++) { acc += (SPAWN_W[pool[i]] || 1); if (pick <= acc) { id = pool[i]; break; } }
+      b.queue.push({ t: t, id: id, row: sd.rows[Math.floor(rng() * sd.rows.length)] });
+      t += sd.gap * (0.82 + rng() * 0.36);
+    }
+    t += sd.waveGap;
+  }
+  if (sd.boss) {
+    var bc = bossCountOf(sd.stage), bt = b.queue[b.queue.length - 1].t + 1.5;
+    for (i = 0; i < bc; i++) b.queue.push({ t: bt + i * 2.2, id: 'siege', row: sd.rows[Math.floor(rng() * sd.rows.length)] });
+  }
+  b.queue.sort(function (a, c2) { return a.t - c2.t; });
+  b.total = b.queue.length;
+  return b;
+}
+
+/* ---------- 지휘/융합로 버프 재계산 ---------- */
+function applyBuffs(b) {
+  var i, j, T = b.turrets;
+  for (i = 0; i < T.length; i++) { T[i].atkMul = 1; T[i].spdMul = 1; T[i].hpMul = 1; }
+  for (i = 0; i < T.length; i++) {
+    var s = T[i]; if (s.dead || !s.def.sp || s.def.sp.k !== 'buff') continue;
+    var atk = spVal(s.def, s.lv, 'atk'), spd = spVal(s.def, s.lv, 'spd'), hp = spVal(s.def, s.lv, 'hp');
+    for (j = 0; j < T.length; j++) {
+      var o = T[j]; if (o.dead || o === s) continue;
+      var dx = o.x - s.x, dy = o.y - s.y;
+      if (dx * dx + dy * dy <= s.base.range * s.base.range) { o.atkMul += atk; o.spdMul += spd; o.hpMul += hp; }
+    }
+  }
+  for (i = 0; i < T.length; i++) {
+    var u = T[i]; if (u.dead) continue;
+    var nm = Math.round(u.base.hp * u.hpMul);
+    if (nm !== u.maxHp) { var ratio = u.hp / u.maxHp; u.maxHp = nm; u.hp = Math.min(nm, Math.max(1, ratio * nm)); }
+  }
+}
+
+/* ---------- 적 생성 ---------- */
+function spawnEnemy(b, id, row) {
+  var d = ENEMY_BY_ID[id], sd = b.sd;
+  var e = {
+    def: d, row: row, x: GRID_COLS + 0.45 + b.rng() * 0.7, y: row + 0.5,
+    maxHp: d.hp * (d.boss ? sd.bossHpMul : sd.hpMul), hp: d.hp * (d.boss ? sd.bossHpMul : sd.hpMul),
+    dmg: d.dmg * sd.dmgMul, spd: d.spd * sd.spdMul, rate: d.rate,
+    armorBase: d.armor, armorCut: 0, armorT: 0,
+    slow: 0, slowT: 0, freezeT: 0, stunT: 0,
+    burnDps: 0, burnT: 0, shieldAmt: 0,
+    cd: 0.4 + b.rng() * 0.5, tgt: null, size: d.size, boss: !!d.boss,
+    coin: Math.max(1, Math.round(sd.coinPer * d.coin)),
+    hitFlash: 0, phase: b.rng() * 6.28, dead: false, kb: 0
+  };
+  b.enemies.push(e);
+  if (d.aura) b.auras.push(e);
+  FX.spawn(e);
+  return e;
+}
+
+/* ---------- 대미지 ---------- */
+function hurtEnemy(b, e, raw, opt) {
+  if (e.dead) return 0;
+  var armor = clamp(e.armorBase - e.armorCut, 0, 0.85);
+  var d = raw * (1 - armor) * (1 - e.shieldAmt);
+  e.hp -= d; e.hitFlash = 0.12;
+  FX.dmg(e.x, e.y, d, opt && opt.crit);
+  if (e.hp <= 0) {
+    e.dead = true; b.kills++; b.coins += e.coin;
+    FX.boom(e.x, e.y, e.boss ? 2.0 : (e.size > 0.55 ? 1.3 : 1.0), e.boss);
+    if (e.boss) FX.shake(9, 0.4);
+  }
+  return d;
+}
+
+function hurtTurret(b, u, raw) {
+  if (u.dead) return;
+  var d = raw;
+  var sp = u.def.sp;
+  if (sp && sp.k === 'tough') d *= (1 - spVal(u.def, u.lv, 'cut'));
+  if (sp && sp.k === 'guard' && b.rng() < spVal(u.def, u.lv, 'ch')) d *= 0.5;
+  /* 절대 방벽 흡수 */
+  if (!(sp && sp.k === 'absorb')) {
+    var best = null, bestR = 0;
+    for (var i = 0; i < b.turrets.length; i++) {
+      var a = b.turrets[i];
+      if (a.dead || a === u || !a.def.sp || a.def.sp.k !== 'absorb') continue;
+      var dx = u.x - a.x, dy = u.y - a.y;
+      if (dx * dx + dy * dy <= a.base.range * a.base.range) {
+        var rr = spVal(a.def, a.lv, 'ratio');
+        if (rr > bestR) { bestR = rr; best = a; }
+      }
+    }
+    if (best) { var moved = d * bestR; d -= moved; best.hp -= moved; best.flash = 0.12; if (best.hp <= 0) killTurret(b, best); }
+  }
+  u.hp -= d; u.flash = 0.12;
+  if (u.hp <= 0) killTurret(b, u);
+}
+
+function killTurret(b, u) {
+  if (u.dead) return;
+  u.dead = true; u.hp = 0;
+  FX.boom(u.x, u.y, 1.6, false); FX.shake(6, 0.25);
+  applyBuffs(b);
+}
+
+/* ---------- 특수효과 적용 ---------- */
+function applyOnHit(b, e, def, lv, dmg) {
+  var sp = def.sp;
+  var crit = false;
+  if (sp && sp.k === 'crit' && b.rng() < spVal(def, lv, 'ch')) { dmg *= def.sp.mult; crit = true; }
+  hurtEnemy(b, e, dmg, { crit: crit });
+  if (!sp) return;
+  switch (sp.k) {
+    case 'burn':
+      e.burnDps = Math.max(e.burnDps, spVal(def, lv, 'dps') * b.sd.hpMul * 0.35 + spVal(def, lv, 'dps'));
+      e.burnT = Math.max(e.burnT, sp.dur); break;
+    case 'slow':
+      var amt = Math.min(0.85, spVal(def, lv, 'amt'));
+      if (amt >= e.slow || e.slowT <= 0) { e.slow = amt; e.slowT = sp.dur; }
+      if (sp.freeze && b.rng() < spVal(def, lv, 'freeze')) e.freezeT = Math.max(e.freezeT, 1.0);
+      break;
+    case 'stun':
+      if (b.rng() < spVal(def, lv, 'ch')) e.stunT = Math.max(e.stunT, sp.dur); break;
+    case 'armor':
+      e.armorCut = Math.max(e.armorCut, Math.min(0.6, spVal(def, lv, 'amt'))); e.armorT = sp.dur; break;
+    case 'knock':
+      if (!e.boss) { e.kb = spVal(def, lv, 'd'); }
+      else e.kb = spVal(def, lv, 'd') * 0.25;
+      break;
+    case 'chain':
+      var n = sp.n, ratio = spVal(def, lv, 'ratio'), cnt = 0;
+      for (var i = 0; i < b.enemies.length && cnt < n; i++) {
+        var o = b.enemies[i];
+        if (o === e || o.dead) continue;
+        var dx = o.x - e.x, dy = o.y - e.y;
+        if (dx * dx + dy * dy <= 2.25) { hurtEnemy(b, o, dmg * ratio, null); FX.beam(e.x, e.y, o.x, o.y, '#8fd8ff', 0.12); cnt++; }
+      }
+      break;
+    case 'field':
+      var a2 = Math.min(0.85, spVal(def, lv, 'amt'));
+      if (a2 >= e.slow || e.slowT <= 0) { e.slow = a2; e.slowT = sp.dur; }
+      if (b.rng() < spVal(def, lv, 'stun')) e.stunT = Math.max(e.stunT, 0.9);
+      break;
+  }
+}
+
+function splashAt(b, x, y, r, dmg, def, lv) {
+  for (var i = 0; i < b.enemies.length; i++) {
+    var e = b.enemies[i]; if (e.dead) continue;
+    var dx = e.x - x, dy = e.y - y, d2 = dx * dx + dy * dy;
+    if (d2 <= r * r) {
+      var f = 1 - 0.45 * Math.sqrt(d2) / r;
+      hurtEnemy(b, e, dmg * f, null);
+      if (def.sp && def.sp.burn) { e.burnDps = Math.max(e.burnDps, spVal(def, lv, 'burn')); e.burnT = Math.max(e.burnT, def.sp.dur); }
+    }
+  }
+  FX.ring(x, y, r);
+}
+
+/* ---------- 발사 ---------- */
+function fireTurret(b, u) {
+  var def = u.def, lv = u.lv, dmg = u.base.dmg * u.atkMul;
+  var kind = def.proj;
+  var sp = def.sp;
+
+  if (sp && sp.k === 'pierce') {
+    var lanes = sp.lanes;
+    var found = null;
+    for (var i = 0; i < b.enemies.length; i++) {
+      var e = b.enemies[i]; if (e.dead || e.x > GRID_COLS + 0.2 || e.x < u.x) continue;
+      if (Math.abs(e.row - u.r) > (lanes === 3 ? 1 : 0)) continue;
+      if (e.x - u.x > u.base.range) continue;
+      if (!found || e.x < found.x) found = e;
+    }
+    if (!found) return false;
+    u.ang = 0;
+    b.projs.push({ kind: 'lance', x: u.x + 0.35, y: u.y, vx: PROJ_SPEED.lance, dmg: dmg, def: def, lv: lv,
+                   lanes: lanes, row: u.r, hit: [], maxX: u.x + u.base.range, ttl: 2 });
+    FX.muzzle(u.x, u.y, 0, def.tier);
+    Snd && Snd.shoot && Snd.shoot(kind, def.tier);
+    return true;
+  }
+
+  if (sp && sp.k === 'field') {
+    var any = false;
+    for (var j = 0; j < b.enemies.length; j++) {
+      var f = b.enemies[j]; if (f.dead || f.x > GRID_COLS + 0.2) continue;
+      var dx0 = f.x - u.x, dy0 = f.y - u.y;
+      if (dx0 * dx0 + dy0 * dy0 <= u.base.range * u.base.range) { applyOnHit(b, f, def, lv, dmg); any = true; }
+    }
+    if (any) { FX.ring(u.x, u.y, u.base.range, '#c9a0ff'); Snd && Snd.shoot && Snd.shoot('field', def.tier); }
+    return any;
+  }
+
+  var tgt = pickTarget(b, u);
+  if (!tgt) return false;
+  var ax = tgt.x - u.x, ay = tgt.y - u.y;
+  u.ang = Math.atan2(ay, ax);
+  u.recoil = 1;
+
+  if (INSTANT[kind]) {
+    FX.beam(u.x, u.y, tgt.x, tgt.y, TIERS[def.tier].lit, kind === 'wave' ? 0.16 : 0.10, kind);
+    applyOnHit(b, tgt, def, lv, dmg);
+    if (sp && sp.k === 'splash') splashAt(b, tgt.x, tgt.y, spVal(def, lv, 'r'), dmg, def, lv);
+  } else {
+    b.projs.push({ kind: kind, x: u.x + Math.cos(u.ang) * 0.34, y: u.y + Math.sin(u.ang) * 0.34,
+                   sp: PROJ_SPEED[kind] || 18, dmg: dmg, def: def, lv: lv, tgt: tgt, ttl: 2.5,
+                   ang: u.ang, tier: def.tier });
+  }
+  FX.muzzle(u.x, u.y, u.ang, def.tier);
+  Snd && Snd.shoot && Snd.shoot(kind, def.tier);
+  return true;
+}
+
+/* 공격 터렛은 자기 행의 적만 표적으로 삼는다 */
+function pickTarget(b, u) {
+  var best = null, R = u.base.range;
+  for (var i = 0; i < b.enemies.length; i++) {
+    var e = b.enemies[i];
+    if (e.dead || e.row !== u.r || e.x > GRID_COLS + 0.2) continue;
+    if (Math.abs(e.x - u.x) > R) continue;
+    if (!best || e.x < best.x) best = e;
+  }
+  return best;
+}
+
+/* ---------- 메인 스텝 ---------- */
+function stepBattle(b, dt) {
+  if (b.status !== 'run') return;
+  b.t += dt;
+  var i, j, e, u;
+
+  /* 스폰 */
+  while (b.qi < b.queue.length && b.queue[b.qi].t <= b.t) {
+    var q = b.queue[b.qi++]; spawnEnemy(b, q.id, q.row);
+  }
+
+  /* 적 오라 */
+  for (i = 0; i < b.enemies.length; i++) b.enemies[i].shieldAmt = 0;
+  for (i = 0; i < b.auras.length; i++) {
+    var a = b.auras[i]; if (a.dead) continue;
+    var au = a.def.aura, r2 = au.r * au.r;
+    for (j = 0; j < b.enemies.length; j++) {
+      var o = b.enemies[j]; if (o.dead || o === a) continue;
+      var dx = o.x - a.x, dy = o.y - a.y; if (dx * dx + dy * dy > r2) continue;
+      if (au.k === 'shield') o.shieldAmt = Math.max(o.shieldAmt, au.amt);
+      else if (au.k === 'regen') o.hp = Math.min(o.maxHp, o.hp + o.maxHp * au.amt * dt);
+    }
+  }
+
+  /* 터렛 */
+  for (i = 0; i < b.turrets.length; i++) {
+    u = b.turrets[i]; if (u.dead) continue;
+    if (u.flash > 0) u.flash -= dt;
+    if (u.recoil > 0) u.recoil = Math.max(0, u.recoil - dt * 6);
+    var sp = u.def.sp;
+    if (sp && sp.k === 'buff') continue;
+    if (sp && sp.k === 'heal') {
+      var pct = spVal(u.def, u.lv, 'pct') * u.atkMul, R2 = u.base.range * u.base.range, healed = false;
+      for (j = 0; j < b.turrets.length; j++) {
+        var o2 = b.turrets[j]; if (o2.dead || o2 === u || o2.hp >= o2.maxHp) continue;
+        var dx2 = o2.x - u.x, dy2 = o2.y - u.y; if (dx2 * dx2 + dy2 * dy2 > R2) continue;
+        o2.hp = Math.min(o2.maxHp, o2.hp + o2.maxHp * pct * dt); healed = true;
+      }
+      u.spin = (u.spin || 0) + dt * (healed ? 4 : 1.2);
+      continue;
+    }
+    u.cd -= dt * u.spdMul;
+    if (u.cd <= 0) {
+      if (fireTurret(b, u)) u.cd += 1 / (u.base.rate * u.spdMul);
+      else u.cd = 0;
+    }
+  }
+
+  /* 발사체 */
+  for (i = b.projs.length - 1; i >= 0; i--) {
+    var p = b.projs[i]; p.ttl -= dt;
+    if (p.kind === 'lance') {
+      p.x += p.vx * dt;
+      for (j = 0; j < b.enemies.length; j++) {
+        var le = b.enemies[j];
+        if (le.dead || p.hit.indexOf(le) >= 0) continue;
+        if (Math.abs(le.row - p.row) > (p.lanes === 3 ? 1 : 0)) continue;
+        if (Math.abs(le.x - p.x) < 0.32) { p.hit.push(le); applyOnHit(b, le, p.def, p.lv, p.dmg); FX.impact(le.x, le.y, p.def.tier); }
+      }
+      if (p.x > p.maxX || p.ttl <= 0 || p.x > GRID_COLS + 0.6) b.projs.splice(i, 1);
+      continue;
+    }
+    var t2 = p.tgt;
+    if (!t2 || t2.dead) {
+      p.x += Math.cos(p.ang) * p.sp * dt; p.y += Math.sin(p.ang) * p.sp * dt;
+      if (p.ttl <= 0 || p.x > GRID_COLS + 1.2 || p.x < -1) {
+        if (p.def.sp && p.def.sp.k === 'splash') splashAt(b, p.x, p.y, spVal(p.def, p.lv, 'r'), p.dmg, p.def, p.lv);
+        b.projs.splice(i, 1);
+      }
+      continue;
+    }
+    var ddx = t2.x - p.x, ddy = t2.y - p.y, dd = Math.hypot(ddx, ddy);
+    if (dd < p.sp * dt + 0.12) {
+      p.x = t2.x; p.y = t2.y;
+      if (p.def.sp && p.def.sp.k === 'splash') { splashAt(b, p.x, p.y, spVal(p.def, p.lv, 'r'), p.dmg, p.def, p.lv); FX.boom(p.x, p.y, 0.8, false); }
+      else { applyOnHit(b, t2, p.def, p.lv, p.dmg); FX.impact(p.x, p.y, p.def.tier); }
+      b.projs.splice(i, 1); continue;
+    }
+    p.ang = Math.atan2(ddy, ddx);
+    p.x += ddx / dd * p.sp * dt; p.y += ddy / dd * p.sp * dt;
+    if (p.ttl <= 0) b.projs.splice(i, 1);
+  }
+
+  /* 적 */
+  for (i = 0; i < b.enemies.length; i++) {
+    e = b.enemies[i]; if (e.dead) continue;
+    if (e.hitFlash > 0) e.hitFlash -= dt;
+    if (e.armorT > 0) { e.armorT -= dt; if (e.armorT <= 0) e.armorCut = 0; }
+    if (e.slowT > 0) { e.slowT -= dt; if (e.slowT <= 0) e.slow = 0; }
+    if (e.freezeT > 0) e.freezeT -= dt;
+    if (e.stunT > 0) e.stunT -= dt;
+    if (e.burnT > 0) { e.burnT -= dt; hurtEnemy(b, e, e.burnDps * dt, null); if (e.dead) continue; }
+    if (e.kb > 0) { var m = Math.min(e.kb, 3.5 * dt); e.x += m; e.kb -= m; if (e.x > GRID_COLS + 0.9) e.x = GRID_COLS + 0.9; }
+
+    var frozen = (e.freezeT > 0 || e.stunT > 0);
+    if (frozen) { e.cd = Math.max(e.cd, 0.15); continue; }
+
+    /* 표적: 같은 행에서 자기보다 왼쪽에 있는 가장 오른쪽 터렛 */
+    var tg = null;
+    for (j = 0; j < b.turrets.length; j++) {
+      u = b.turrets[j];
+      if (u.dead || u.r !== e.row || u.x >= e.x) continue;
+      if (!tg || u.x > tg.x) tg = u;
+    }
+    var reach = e.def.rng > 0 ? e.def.rng : (0.64 + e.size * 0.55);
+    if (tg && (e.x - tg.x) <= reach && e.x <= GRID_COLS - 0.25) {
+      e.cd -= dt;
+      if (e.cd <= 0) {
+        e.cd += 1 / e.rate;
+        if (e.def.splash) {
+          for (var k2 = 0; k2 < b.turrets.length; k2++) {
+            var tu = b.turrets[k2]; if (tu.dead) continue;
+            var sx = tu.x - tg.x, sy = tu.y - tg.y;
+            if (sx * sx + sy * sy <= e.def.splash * e.def.splash) hurtTurret(b, tu, e.dmg * 0.6);
+          }
+          hurtTurret(b, tg, e.dmg * 0.4);
+          FX.ring(tg.x, tg.y, e.def.splash, '#ff8a4a');
+        } else hurtTurret(b, tg, e.dmg);
+        FX.beam(e.x, e.y, tg.x, tg.y, '#ff6a4a', 0.08, e.def.rng > 0 ? 'beam' : 'melee');
+        FX.impact(tg.x + 0.2, tg.y, 0);
+      }
+      continue;
+    }
+    e.x -= e.spd * (1 - e.slow) * dt;
+    if (e.x <= WALL_X) { b.status = 'fail'; b.reason = 'breach'; return; }
+  }
+
+  /* 정리 */
+  for (i = b.enemies.length - 1; i >= 0; i--) if (b.enemies[i].dead) b.enemies.splice(i, 1);
+  for (i = b.auras.length - 1; i >= 0; i--) if (b.auras[i].dead) b.auras.splice(i, 1);
+
+  if (b.qi >= b.queue.length && b.enemies.length === 0) { b.status = 'clear'; return; }
+  var alive = false;
+  for (i = 0; i < b.turrets.length; i++) if (!b.turrets[i].dead) { alive = true; break; }
+  if (!alive && b.turrets.length > 0) {
+    /* 터렛 전멸: 남은 적이 벽에 닿을 때까지 진행되므로 그대로 둔다 */
+  }
+  if (b.t > b.limit) { b.status = 'fail'; b.reason = 'time'; }
+}
+
+/* ---------- 전투 결과를 진행 상태에 반영 ---------- */
+function commitBattle(b, st) {
+  for (var i = 0; i < b.turrets.length; i++) {
+    var u = b.turrets[i];
+    if (u.dead) st.grid[u.r][u.c] = null;
+    else u.ref.hp = Math.max(1, Math.round(u.hp));
+  }
+  st.kills += b.kills;
+  var ratio = b.total ? clamp(b.kills / b.total, 0, 1) : 0;
+  var bonus = b.status === 'clear' ? b.sd.clearBonus
+            : Math.round(b.sd.clearBonus * BAL.failBonus * ratio);
+  var gain = b.coins + bonus;
+  st.coins += gain;
+  if (b.status === 'clear' && st.stage < MAX_STAGE) st.stage++;
+  return { gain: gain, kill: b.coins, bonus: bonus, ratio: ratio };
+}
+
+/* ===== src/50_render.js ===== */
+/* ============================================================
+   IRONGRID - 렌더링 & 이펙트
+   ============================================================ */
+var CELL = 92, GX = 110, FW = 1280, FH = 460;
+var cv, cx, bgC, dpr = 1;
+
+var P = { arr: [], n: 0 };        // 파티클 풀
+var DMG = [], BEAM = [], RING = [], MUZ = [];
+var Shake = { m: 0, t: 0 }, Stop = { t: 0 };
+var MAXP = 320, QUAL = 1, PCAP = 320;
+
+function wx2s(x) { return GX + x * CELL; }
+function wy2s(y) { return y * CELL; }
+
+function initRender(canvas) {
+  cv = canvas; cx = cv.getContext('2d', { alpha: false });
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = FW * dpr; cv.height = FH * dpr;
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  for (var i = 0; i < MAXP; i++) P.arr.push({ life: 0 });
+  buildBg();
+}
+
+function buildBg() {
+  bgC = mkC(FW, FH); var g = bgC.getContext('2d');
+  g.fillStyle = '#0b0f15'; g.fillRect(0, 0, FW, FH);
+  /* 바닥 패널 */
+  var floor = g.createLinearGradient(0, 0, 0, FH);
+  floor.addColorStop(0, '#141b25'); floor.addColorStop(0.5, '#101720'); floor.addColorStop(1, '#0c1119');
+  g.fillStyle = floor; g.fillRect(GX, 0, GRID_COLS * CELL, FH);
+  /* 셀 격자 */
+  for (var r = 0; r < GRID_ROWS; r++) for (var c = 0; c < GRID_COLS; c++) {
+    var x = GX + c * CELL, y = r * CELL;
+    g.fillStyle = ((r + c) % 2) ? 'rgba(255,255,255,.016)' : 'rgba(0,0,0,.10)';
+    g.fillRect(x, y, CELL, CELL);
+    g.strokeStyle = 'rgba(120,160,200,.09)'; g.lineWidth = 1;
+    g.strokeRect(x + .5, y + .5, CELL - 1, CELL - 1);
+    g.strokeStyle = 'rgba(150,190,230,.16)'; g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(x + 6, y + 2); g.lineTo(x + 2, y + 2); g.lineTo(x + 2, y + 6); g.stroke();
+    g.beginPath();
+    g.moveTo(x + CELL - 6, y + CELL - 2); g.lineTo(x + CELL - 2, y + CELL - 2); g.lineTo(x + CELL - 2, y + CELL - 6); g.stroke();
+  }
+  /* 레인 구분 */
+  for (r = 1; r < GRID_ROWS; r++) {
+    g.strokeStyle = 'rgba(90,130,170,.14)'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(GX, r * CELL); g.lineTo(GX + GRID_COLS * CELL, r * CELL); g.stroke();
+  }
+  /* 좌측 기지 벽 */
+  var wg = g.createLinearGradient(0, 0, GX, 0);
+  wg.addColorStop(0, '#1d2531'); wg.addColorStop(0.7, '#151c26'); wg.addColorStop(1, '#0e131b');
+  g.fillStyle = wg; g.fillRect(0, 0, GX, FH);
+  for (var i = 0; i < 10; i++) {
+    g.fillStyle = i % 2 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.20)';
+    g.fillRect(6, i * 46 + 4, GX - 12, 38);
+  }
+  g.strokeStyle = 'rgba(90,190,255,.35)'; g.lineWidth = 3;
+  g.beginPath(); g.moveTo(GX - 1.5, 0); g.lineTo(GX - 1.5, FH); g.stroke();
+  /* 우측 진입로 */
+  var sg = g.createLinearGradient(GX + GRID_COLS * CELL, 0, FW, 0);
+  sg.addColorStop(0, '#0c1119'); sg.addColorStop(1, '#1a1116');
+  g.fillStyle = sg; g.fillRect(GX + GRID_COLS * CELL, 0, FW - GX - GRID_COLS * CELL, FH);
+  g.save();
+  g.beginPath(); g.rect(GX + GRID_COLS * CELL, 0, FW, FH); g.clip();
+  for (i = -6; i < 20; i++) {
+    g.fillStyle = i % 2 ? 'rgba(255,90,60,.055)' : 'rgba(0,0,0,0)';
+    g.save(); g.translate(GX + GRID_COLS * CELL + i * 30, 0); g.rotate(0.35);
+    g.fillRect(0, -80, 16, 700); g.restore();
+  }
+  g.restore();
+  g.strokeStyle = 'rgba(255,110,70,.30)'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(GX + GRID_COLS * CELL + 1, 0); g.lineTo(GX + GRID_COLS * CELL + 1, FH); g.stroke();
+}
+
+/* ---------- 이펙트 API ---------- */
+function pspawn(x, y, vx, vy, life, size, col, type) {
+  if (P.n >= PCAP) return;
+  for (var i = 0; i < MAXP; i++) {
+    var p = P.arr[i];
+    if (p.life <= 0) {
+      p.x = x; p.y = y; p.vx = vx; p.vy = vy; p.life = life; p.max = life;
+      p.size = size; p.col = col; p.type = type || 0; P.n++; return;
+    }
+  }
+}
+
+FX.muzzle = function (x, y, ang, tier) {
+  var sx = wx2s(x), sy = wy2s(y), T = TIERS[tier];
+  MUZ.push({ x: sx + Math.cos(ang) * 34, y: sy + Math.sin(ang) * 34, a: ang, life: .07, max: .07, col: T.lit });
+  for (var i = 0; i < 3; i++) {
+    var sp = 60 + Math.random() * 90, a = ang + (Math.random() - .5) * .7;
+    pspawn(sx + Math.cos(ang) * 32, sy + Math.sin(ang) * 32, Math.cos(a) * sp, Math.sin(a) * sp, .18, 2.4, T.lit, 0);
+  }
+};
+FX.impact = function (x, y, tier) {
+  var sx = wx2s(x), sy = wy2s(y), col = TIERS[tier] ? TIERS[tier].lit : '#ffd08a';
+  for (var i = 0; i < 5; i++) {
+    var a = Math.random() * 6.284, sp = 40 + Math.random() * 120;
+    pspawn(sx, sy, Math.cos(a) * sp, Math.sin(a) * sp, .22 + Math.random() * .1, 2.2, col, 0);
+  }
+};
+FX.beam = function (x0, y0, x1, y1, col, life, kind) {
+  BEAM.push({ x0: wx2s(x0), y0: wy2s(y0), x1: wx2s(x1), y1: wy2s(y1), col: col, life: life, max: life, kind: kind || 'beam' });
+};
+FX.ring = function (x, y, r, col) { RING.push({ x: wx2s(x), y: wy2s(y), r: r * CELL, life: .34, max: .34, col: col || '#ffb46a' }); };
+FX.dmg = function (x, y, v, crit) {
+  if (DMG.length > 22) return;
+  DMG.push({ x: wx2s(x) + (Math.random() - .5) * 40, y: wy2s(y) - 30 - Math.random() * 22, v: -54, life: .68, max: .68, t: Math.round(v), crit: !!crit });
+};
+FX.boom = function (x, y, s, big) {
+  var sx = wx2s(x), sy = wy2s(y), n = big ? 26 : Math.round(12 * s);
+  for (var i = 0; i < n; i++) {
+    var a = Math.random() * 6.284, sp = (60 + Math.random() * 210) * s;
+    pspawn(sx, sy, Math.cos(a) * sp, Math.sin(a) * sp, .3 + Math.random() * .35, (2 + Math.random() * 3) * s,
+      i % 3 === 0 ? '#ffd27a' : (i % 3 === 1 ? '#ff8a44' : '#ff5a33'), 1);
+  }
+  RING.push({ x: sx, y: sy, r: 26 * s, life: .26, max: .26, col: '#ffb46a' });
+};
+FX.shake = function (m, t) { if (m > Shake.m) { Shake.m = m; Shake.t = t; } };
+FX.stop = function (t) { Stop.t = Math.max(Stop.t, t); };
+FX.heal = function (x, y) {
+  pspawn(wx2s(x) + (Math.random() - .5) * 30, wy2s(y) + 20, 0, -40, .5, 2.6, '#7dffbf', 0);
+};
+FX.spawn = function (e) {
+  var sx = wx2s(e.x), sy = wy2s(e.y);
+  RING.push({ x: sx, y: sy, r: e.boss ? 46 : 24, life: .26, max: .26, col: e.boss ? '#ff5a33' : '#ff8a5a' });
+};
+
+/* 프레임이 떨어지면 이펙트 품질을 자동으로 낮춘다 */
+var qAcc = 0, qFrames = 0;
+function qualityWatch(dt) {
+  qAcc += dt; qFrames++;
+  if (qFrames < 45) return;
+  var avg = qAcc / qFrames; qAcc = 0; qFrames = 0;
+  if (QUAL && avg > 0.026) { QUAL = 0; PCAP = 110; }
+  else if (!QUAL && avg < 0.0185) { QUAL = 1; PCAP = MAXP; }
+}
+
+function updateFX(dt) {
+  qualityWatch(dt);
+  var i, p;
+  for (i = 0; i < MAXP; i++) {
+    p = P.arr[i]; if (p.life <= 0) continue;
+    p.life -= dt;
+    if (p.life <= 0) { P.n--; continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    if (p.type === 1) { p.vy += 220 * dt; p.vx *= 0.965; }
+    else { p.vx *= 0.9; p.vy *= 0.9; }
+  }
+  for (i = DMG.length - 1; i >= 0; i--) { var d = DMG[i]; d.life -= dt; d.y += d.v * dt; d.v += 90 * dt; if (d.life <= 0) DMG.splice(i, 1); }
+  for (i = BEAM.length - 1; i >= 0; i--) { BEAM[i].life -= dt; if (BEAM[i].life <= 0) BEAM.splice(i, 1); }
+  for (i = RING.length - 1; i >= 0; i--) { RING[i].life -= dt; if (RING[i].life <= 0) RING.splice(i, 1); }
+  for (i = MUZ.length - 1; i >= 0; i--) { MUZ[i].life -= dt; if (MUZ[i].life <= 0) MUZ.splice(i, 1); }
+  if (Shake.t > 0) { Shake.t -= dt; if (Shake.t <= 0) Shake.m = 0; else Shake.m *= 0.90; }
+}
+
+/* ---------- 그리기 ---------- */
+function drawField(b, prep, sel, hoverDef, tNow) {
+  var g = cx;
+  g.save();
+  if (Shake.m > 0.2) g.translate((Math.random() - .5) * Shake.m, (Math.random() - .5) * Shake.m);
+  g.drawImage(bgC, 0, 0);
+
+  /* 준비 단계: 배치 가능 셀 / 사거리 미리보기 */
+  if (prep) {
+    for (var r = 0; r < GRID_ROWS; r++) for (var c = 0; c < GRID_COLS; c++) {
+      if (GAME.st.grid[r][c]) continue;
+      var x = GX + c * CELL, y = r * CELL;
+      g.fillStyle = 'rgba(90,190,255,.045)'; g.fillRect(x + 4, y + 4, CELL - 8, CELL - 8);
+    }
+    if (sel) {
+      var sx = GX + sel.c * CELL, sy = sel.r * CELL;
+      var t = GAME.st.grid[sel.r][sel.c];
+      var def = t ? TURRET_BY_ID[t.id] : hoverDef;
+      if (def) {
+        var area = isAreaTurret(def);
+        var R2 = def.range * def.range, ccx = sel.c + .5, ccy = sel.r + .5;
+        g.fillStyle = 'rgba(94,200,255,.11)';
+        g.strokeStyle = 'rgba(120,214,255,.34)'; g.lineWidth = 1.5;
+        g.beginPath();
+        for (var rr3 = 0; rr3 < GRID_ROWS; rr3++) for (var cc3 = 0; cc3 < GRID_COLS; cc3++) {
+          var ddx = (cc3 + .5) - ccx, ddy = (rr3 + .5) - ccy;
+          if (area) { if (ddx * ddx + ddy * ddy > R2) continue; }
+          else { if (rr3 !== sel.r || Math.abs(ddx) > def.range) continue; }
+          g.rect(GX + cc3 * CELL + 3, rr3 * CELL + 3, CELL - 6, CELL - 6);
+        }
+        g.fill(); g.stroke();
+      }
+      if (!t && hoverDef) {
+        var gk = hoverDef.art + '_' + hoverDef.tier, gsc = CELL / SPR * 1.12;
+        g.save();
+        g.globalAlpha = .42 + Math.sin(tNow * 4.2) * .14;
+        g.translate(sx + CELL / 2, sy + CELL / 2); g.scale(gsc, gsc);
+        g.drawImage(SPRITES.turret[gk], -HS, -HS, SPR, SPR);
+        g.drawImage(SPRITES.barrel[gk], -HS, -HS, SPR, SPR);
+        g.restore(); g.globalAlpha = 1;
+      }
+      var pul = 2.6 + Math.sin(tNow * 4.2) * 1.1;
+      g.lineWidth = pul; g.strokeStyle = t ? '#ffd166' : '#6fd4ff';
+      g.strokeRect(sx + 3, sy + 3, CELL - 6, CELL - 6);
+      g.lineWidth = 2; g.strokeStyle = t ? 'rgba(255,209,102,.35)' : 'rgba(111,212,255,.35)';
+      g.strokeRect(sx + 8, sy + 8, CELL - 16, CELL - 16);
+    }
+  }
+
+  /* 그림자 일괄 */
+  var T = b ? b.turrets : GAME.prepTurrets;
+  drawShadows(g, T, b ? b.enemies : null, tNow);
+  for (var i = 0; i < T.length; i++) drawTurret(g, T[i], tNow, !b);
+
+  /* 적 */
+  if (b) for (i = 0; i < b.enemies.length; i++) drawEnemyE(g, b.enemies[i], tNow);
+
+  /* 발사체 */
+  if (b) for (i = 0; i < b.projs.length; i++) drawProj(g, b.projs[i]);
+
+  /* 빔 / 링 / 총구 */
+  g.lineCap = 'round';
+  for (i = 0; i < BEAM.length; i++) {
+    var bm = BEAM[i], a = bm.life / bm.max;
+    g.globalAlpha = a; g.strokeStyle = bm.col;
+    g.lineWidth = bm.kind === 'melee' ? 2 : (bm.kind === 'wave' ? 9 : 4) * a + 1;
+    g.beginPath(); g.moveTo(bm.x0, bm.y0); g.lineTo(bm.x1, bm.y1); g.stroke();
+    if (bm.kind !== 'melee' && QUAL) { g.globalAlpha = a * .45; g.lineWidth *= 2.6; g.stroke(); }
+  }
+  g.globalAlpha = 1;
+  for (i = 0; i < RING.length; i++) {
+    var rg2 = RING[i], k = 1 - rg2.life / rg2.max, rr2 = rg2.r * (0.42 + k * 0.62);
+    if (QUAL) {
+      g.globalAlpha = (1 - k) * .26;
+      g.beginPath(); g.arc(rg2.x, rg2.y, rr2, 0, 6.284);
+      g.fillStyle = rg(g, rg2.x, rg2.y, rr2 * 0.15, rr2, [[0, 'rgba(0,0,0,0)'], [0.75, rg2.col], [1, 'rgba(0,0,0,0)']]);
+      g.fill();
+    }
+    g.globalAlpha = (1 - k) * .6; g.lineWidth = 3.2 * (1 - k) + 1.2; g.strokeStyle = rg2.col;
+    g.beginPath(); g.arc(rg2.x, rg2.y, rr2, 0, 6.284); g.stroke();
+  }
+  g.globalAlpha = 1;
+  for (i = 0; i < MUZ.length; i++) {
+    var m = MUZ[i], ma = m.life / m.max;
+    g.save(); g.translate(m.x, m.y); g.rotate(m.a); g.globalAlpha = ma;
+    g.fillStyle = m.col;
+    g.beginPath(); g.moveTo(0, 0); g.lineTo(20, -8 * ma); g.lineTo(26, 0); g.lineTo(20, 8 * ma); g.closePath(); g.fill();
+    g.restore();
+  }
+  g.globalAlpha = 1;
+
+  drawParticles(g);
+
+  /* 대미지 숫자 */
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (i = 0; i < DMG.length; i++) {
+    var d = DMG[i], da = Math.min(1, d.life / d.max * 1.7);
+    g.globalAlpha = da;
+    g.font = (d.crit ? 'bold 27px ' : 'bold 20px ') + UIFONT;
+    g.lineWidth = 4; g.strokeStyle = 'rgba(0,0,0,.75)';
+    g.strokeText(d.t, d.x, d.y);
+    g.fillStyle = d.crit ? '#ffd166' : '#ffffff';
+    g.fillText(d.t, d.x, d.y);
+  }
+  g.globalAlpha = 1;
+
+  /* 기지 배리어 */
+  var pulse = 0.4 + Math.sin(tNow * 3) * 0.12;
+  var bgd = g.createLinearGradient(GX - 26, 0, GX, 0);
+  bgd.addColorStop(0, 'rgba(90,190,255,0)'); bgd.addColorStop(1, 'rgba(90,190,255,' + (pulse * .5) + ')');
+  g.fillStyle = bgd; g.fillRect(GX - 26, 0, 26, FH);
+
+  g.restore();
+}
+
+var PB = {};
+function drawParticles(g) {
+  var k, i, t, b7;
+  for (k in PB) { b7 = PB[k]; b7[0].length = 0; b7[1].length = 0; b7[2].length = 0; b7[3].length = 0; }
+  for (i = 0; i < MAXP; i++) {
+    var p = P.arr[i]; if (p.life <= 0) continue;
+    var a = p.life / p.max;
+    t = a > .75 ? 3 : (a > .5 ? 2 : (a > .25 ? 1 : 0));
+    b7 = PB[p.col]; if (!b7) b7 = PB[p.col] = [[], [], [], []];
+    var w = p.size * a;
+    b7[t].push(p.x - w, p.y - w, w * 2);
+  }
+  for (k in PB) {
+    b7 = PB[k];
+    for (t = 0; t < 4; t++) {
+      var arr = b7[t]; if (!arr.length) continue;
+      g.globalAlpha = (t + .5) / 4; g.fillStyle = k; g.beginPath();
+      for (i = 0; i < arr.length; i += 3) g.rect(arr[i], arr[i + 1], arr[i + 2], arr[i + 2]);
+      g.fill();
+    }
+  }
+  g.globalAlpha = 1;
+}
+
+function drawShadows(g, T, enemies, tNow) {
+  g.globalAlpha = .36; g.fillStyle = '#000'; g.beginPath();
+  var i;
+  for (i = 0; i < T.length; i++) {
+    var u = T[i]; if (u.dead) continue;
+    g.moveTo(wx2s(u.x) + CELL * 0.42, wy2s(u.y) + 7);
+    g.ellipse(wx2s(u.x) + 2, wy2s(u.y) + 7, CELL * 0.40, CELL * 0.21, 0, 0, 6.284);
+  }
+  if (enemies) for (i = 0; i < enemies.length; i++) {
+    var e = enemies[i]; if (e.dead) continue;
+    var hh = e.size * CELL * 0.62;
+    g.moveTo(wx2s(e.x) + hh * 1.18, wy2s(e.y) + hh * .46);
+    g.ellipse(wx2s(e.x), wy2s(e.y) + hh * .46, hh * 1.18, hh * .40, 0, 0, 6.284);
+  }
+  g.fill(); g.globalAlpha = 1;
+}
+
+function drawTurret(g, u, tNow, prepMode) {
+  if (u.dead) return;
+  var def = u.def, key = def.art + '_' + def.tier, T = TIERS[def.tier];
+  var sx = wx2s(u.x), sy = wy2s(u.y), sc = CELL / SPR * 1.12;
+  g.save(); g.translate(sx, sy);
+  /* 그림자 */
+  g.save(); g.scale(sc, sc); g.drawImage(SPRITES.turret[key], -HS, -HS, SPR, SPR); g.restore();
+  /* 포신 */
+  var ang = u.ang || 0, rec = (u.recoil || 0) * 5;
+  g.save(); g.rotate(ang); g.translate(-rec, 0); g.scale(sc, sc);
+  if (def.sp && (def.sp.k === 'heal')) g.rotate(0);
+  g.drawImage(SPRITES.barrel[key], -HS, -HS, SPR, SPR); g.restore();
+  /* 회전 파츠 */
+  if (def.sp && def.sp.k === 'heal') {
+    g.save(); g.rotate((u.spin || tNow * 1.5)); g.strokeStyle = T.lit; g.lineWidth = 3; g.globalAlpha = .8;
+    for (var q = 0; q < 3; q++) { g.beginPath(); g.arc(0, 0, 20, q * 2.09, q * 2.09 + 1.1); g.stroke(); }
+    g.restore(); g.globalAlpha = 1;
+  }
+  /* 피격 플래시 */
+  if (u.flash > 0 && QUAL) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = Math.min(.45, u.flash * 3.6); g.scale(sc, sc);
+    g.drawImage(SPRITES.turret[key], -HS, -HS, SPR, SPR); g.restore();
+  }
+  /* 체력바 */
+  var ratio = u.maxHp ? u.hp / u.maxHp : 1;
+  if (ratio < 0.999) {
+    g.fillStyle = 'rgba(0,0,0,.65)'; g.fillRect(-30, 34, 60, 7);
+    g.fillStyle = ratio > .5 ? '#4ade80' : (ratio > .25 ? '#fbbf24' : '#f87171');
+    g.fillRect(-29, 35, 58 * ratio, 5);
+  }
+  /* 레벨 뱃지 */
+  g.fillStyle = 'rgba(8,12,18,.88)';
+  rr(-46, -46, 30, 19, 5, g); g.fill();
+  g.strokeStyle = T.col; g.lineWidth = 1.6; g.stroke();
+  g.fillStyle = T.lit; g.font = 'bold 13px ' + UIFONT; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(u.lv, -31, -36);
+  g.restore();
+}
+
+function drawEnemyE(g, e, tNow) {
+  var sx = wx2s(e.x), sy = wy2s(e.y);
+  var sc = e.boss ? 1.42 : 1.5;
+  var hh = e.size * CELL * 0.62;
+  var frozen = (e.freezeT > 0 || e.stunT > 0);
+  var bob = Math.sin(tNow * 9 + e.phase) * (frozen ? 0 : 2.4);
+  g.save(); g.translate(sx, sy + bob);
+  /* 다리 */
+  if (e.def.art !== 'shield' && e.def.art !== 'medic') {
+    g.strokeStyle = '#151b24'; g.lineWidth = hh * 0.15; g.lineCap = 'round';
+    g.beginPath();
+    for (var i = 0; i < 4; i++) {
+      var ph = tNow * 10 + e.phase + i * 1.6;
+      var lx = (-0.45 + (i % 2) * 0.78) * hh, ly = (i < 2 ? -1 : 1) * hh * 0.52;
+      g.moveTo(lx, ly * .5);
+      g.lineTo(lx + (frozen ? 0 : Math.sin(ph) * hh * 0.22), ly + hh * 0.40);
+    }
+    g.stroke();
+  }
+  var img = SPRITES.enemy[e.def.art];
+  g.save(); g.scale(sc, sc); g.drawImage(img, -HS, -HS, SPR, SPR); g.restore();
+  /* 피격 섬광: 스프라이트 자체만 밝게 */
+  if (e.hitFlash > 0 && QUAL) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = Math.min(.5, e.hitFlash * 4.2);
+    g.scale(sc, sc); g.drawImage(img, -HS, -HS, SPR, SPR); g.restore();
+  }
+  /* 상태 표시: 본체를 가리지 않는 외곽 오라 */
+  if ((e.slow > 0 || e.freezeT > 0) && QUAL) {
+    var fr = e.freezeT > 0, ar = hh * 2.3;
+    g.globalAlpha = fr ? .62 : .34;
+    g.drawImage(SPRITES.aura, -ar / 2, -ar / 2, ar, ar);
+    g.globalAlpha = 1;
+  }
+  if (e.stunT > 0) {
+    g.strokeStyle = '#ffe066'; g.lineWidth = 2.6;
+    for (var s2 = 0; s2 < 3; s2++) {
+      var a = tNow * 7 + s2 * 2.09;
+      g.beginPath(); g.arc(Math.cos(a) * hh * 0.9, -hh - 6 + Math.sin(a) * 5, 3.6, 0, 6.284); g.stroke();
+    }
+  }
+  if (e.burnT > 0 && Math.random() < .4)
+    pspawn(sx + (Math.random() - .5) * hh * 1.4, sy, (Math.random() - .5) * 20, -70, .35, 2.4, '#ff9a3a', 0);
+  /* 체력바 */
+  var rt = e.hp / e.maxHp;
+  if (rt < 0.999) {
+    var w = e.boss ? 108 : Math.max(42, hh * 1.7), by = -hh - 14;
+    g.fillStyle = 'rgba(0,0,0,.72)'; g.fillRect(-w / 2, by, w, e.boss ? 9 : 7);
+    g.fillStyle = e.boss ? '#ff5a33' : (rt > .5 ? '#f87171' : '#fca5a5');
+    g.fillRect(-w / 2 + 1, by + 1, (w - 2) * rt, e.boss ? 7 : 5);
+  }
+  g.restore();
+}
+
+function drawProj(g, p) {
+  var sx = wx2s(p.x), sy = wy2s(p.y);
+  var T = TIERS[p.def.tier];
+  g.save(); g.translate(sx, sy);
+  if (p.kind === 'lance') {
+    g.rotate(0);
+    g.fillStyle = T.lit; g.globalAlpha = .95;
+    g.beginPath(); g.moveTo(-26, -3); g.lineTo(14, 0); g.lineTo(-26, 3); g.closePath(); g.fill();
+    g.globalAlpha = .35; g.fillRect(-46, -2, 34, 4);
+  } else {
+    g.rotate(p.ang || 0);
+    switch (p.kind) {
+      case 'shell':
+        g.fillStyle = '#d9e2ee'; rr(-7, -4, 14, 8, 3, g); g.fill();
+        g.fillStyle = T.col; rr(3, -3, 6, 6, 2, g); g.fill(); break;
+      case 'ice':
+        g.fillStyle = T.lit; g.globalAlpha = .95;
+        poly(g, [[8, 0], [0, -5], [-7, 0], [0, 5]]); g.fill();
+        g.globalAlpha = .35; g.beginPath(); g.arc(0, 0, 9, 0, 6.284); g.fill(); break;
+      case 'flame':
+        g.globalAlpha = .8; g.fillStyle = '#ff9a3a';
+        g.beginPath(); g.ellipse(0, 0, 11, 6, 0, 0, 6.284); g.fill();
+        g.fillStyle = '#ffd88a'; g.beginPath(); g.ellipse(2, 0, 5, 3, 0, 0, 6.284); g.fill(); break;
+      case 'acid':
+        g.fillStyle = '#8bdc4a'; g.beginPath(); g.ellipse(0, 0, 7, 5, 0, 0, 6.284); g.fill(); break;
+      case 'spark':
+        g.strokeStyle = T.lit; g.lineWidth = 3; g.globalAlpha = .9;
+        g.beginPath(); g.moveTo(-9, -3); g.lineTo(-1, 2); g.lineTo(3, -3); g.lineTo(10, 2); g.stroke(); break;
+      default:
+        g.fillStyle = T.lit; rr(-6, -2, 13, 4, 2, g); g.fill();
+        g.globalAlpha = .4; g.fillStyle = T.col; rr(-16, -1.5, 12, 3, 1.5, g); g.fill();
+    }
+  }
+  g.restore(); g.globalAlpha = 1;
+}
+
+/* ===== src/60_ui.js ===== */
+/* ============================================================
+   IRONGRID - 게임 컨트롤러 & UI
+   ============================================================ */
+function el(id) { return document.getElementById(id); }
+function mk(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+
+var GAME = {
+  st: null, phase: 'prep', b: null, sel: null, pickDef: null,
+  tierTab: 0, speed: 1, paused: false, prepTurrets: [], dirty: true,
+  hintDone: {}, lastResult: null, mode: 'pc'
+};
+
+/* ---------- 준비 단계 표시용 터렛 목록 ---------- */
+function rebuildPrep() {
+  var out = [];
+  for (var r = 0; r < GRID_ROWS; r++) for (var c = 0; c < GRID_COLS; c++) {
+    var g = GAME.st.grid[r][c]; if (!g) continue;
+    var def = TURRET_BY_ID[g.id], st = tStat(def, g.lv);
+    out.push({ def: def, lv: g.lv, r: r, c: c, x: c + .5, y: r + .5, hp: Math.min(g.hp, st.hp), maxHp: st.hp, ang: 0, recoil: 0, dead: false, flash: 0 });
+  }
+  GAME.prepTurrets = out;
+}
+
+/* ---------- 토스트 ---------- */
+var toastT = 0;
+function toast(msg, bad) {
+  var t = el('toast'); t.textContent = msg;
+  t.className = 'toast show' + (bad ? ' bad' : ''); toastT = 2.2;
+}
+function hint(key, msg) {
+  if (GAME.hintDone[key]) return;
+  GAME.hintDone[key] = 1; toast(msg);
+}
+
+/* ---------- 모달 ---------- */
+function openModal(id) { el('mask').style.display = 'flex'; ['boot', 'settings', 'save', 'load', 'result', 'pause', 'help'].forEach(function (m) { el('m_' + m).style.display = m === id ? 'block' : 'none'; }); }
+function closeModal() { el('mask').style.display = 'none'; }
+
+/* ---------- 상점 ---------- */
+function buildShop() {
+  var tabs = el('tiers'); tabs.innerHTML = '';
+  TIERS.forEach(function (T, i) {
+    var b = mk('button', 'tab' + (i === GAME.tierTab ? ' on' : ''), T.name);
+    b.style.setProperty('--tc', T.col);
+    if (GAME.st.stage < T.unlock) b.classList.add('lock');
+    b.onclick = function () { GAME.tierTab = i; GAME.dirty = true; Snd.ui('tap'); };
+    tabs.appendChild(b);
+  });
+  var shop = el('shop'); shop.innerHTML = '';
+  var list = TURRETS.filter(function (d) { return d.tier === GAME.tierTab; });
+  list.forEach(function (d) {
+    var T = TIERS[d.tier], locked = GAME.st.stage < T.unlock;
+    var card = mk('button', 'card' + (locked ? ' locked' : '') + (GAME.pickDef === d ? ' pick' : ''));
+    card.style.setProperty('--tc', T.col);
+    var ic = mkC(56, 56), g = ic.getContext('2d');
+    g.drawImage(SPRITES.turret[d.art + '_' + d.tier], 0, 0, SPRPX, SPRPX, 0, 0, 56, 56);
+    g.drawImage(SPRITES.barrel[d.art + '_' + d.tier], 0, 0, SPRPX, SPRPX, 0, 0, 56, 56);
+    ic.className = 'ic';
+    card.appendChild(ic);
+    card.appendChild(mk('span', 'nm', d.name.replace(' 터렛', '')));
+    card.appendChild(mk('span', 'cs', locked ? T.unlock + '스테이지' : fmtNum(buyCost(d))));
+    if (locked) card.appendChild(mk('span', 'lk', '\u25A0'));
+    card.onclick = function () {
+      if (GAME.phase !== 'prep') { toast('전투 중에는 배치를 바꿀 수 없습니다.', 1); Snd.ui('no'); return; }
+      if (locked) { toast(T.unlock + '스테이지 이후 구매 가능합니다.', 1); Snd.ui('no'); return; }
+      GAME.pickDef = (GAME.pickDef === d) ? null : d;
+      if (GAME.sel && GAME.st.grid[GAME.sel.r][GAME.sel.c]) GAME.sel = null;
+      GAME.dirty = true; Snd.ui('tap');
+      if (GAME.pickDef) hint('place', GAME.sel ? '설치 버튼을 누르면 배치됩니다.' : '설치할 칸을 누르세요.');
+    };
+    shop.appendChild(card);
+  });
+}
+
+/* ---------- 사이드 패널 ---------- */
+function tierChip(def) {
+  var T = TIERS[def.tier];
+  return '<span class="tchip" style="color:' + T.col + '">' + T.name + '</span>';
+}
+function statGrid(def, lv, cur, nx) {
+  return '<span>공격력</span><b>' + (def.dmg > 0 ? Math.round(cur.dmg) + (nx ? ' <i>→' + Math.round(nx.dmg) + '</i>' : '') : '지원 전용') + '</b>' +
+    '<span>공격 속도</span><b>' + (def.dmg > 0 ? cur.rate.toFixed(2) + '/초' + (nx ? ' <i>→' + nx.rate.toFixed(2) + '</i>' : '') : '-') + '</b>' +
+    '<span>사거리</span><b>' + def.range.toFixed(1) + '칸</b>' +
+    '<span>대상</span><b>' + (isAreaTurret(def) ? '전 행' : '같은 행') + '</b>' +
+    '<span>최대 체력</span><b>' + cur.hp + (nx ? ' <i>→' + nx.hp + '</i>' : '') + '</b>';
+}
+function twoCol(leftTitle, leftHtml, rightTitle, rightHtml) {
+  var w = mk('div', 'cols');
+  w.innerHTML = '<div class="col"><div class="ct">' + leftTitle + '</div><div class="kv">' + leftHtml + '</div></div>' +
+                '<div class="col"><div class="ct">' + rightTitle + '</div><div class="kv">' + rightHtml + '</div></div>';
+  return w;
+}
+function waveOf(b) {
+  return Math.min(b.sd.waves, Math.floor(b.qi / Math.max(1, b.sd.per)) + 1);
+}
+function cellName(r, c) { return (r + 1) + '행 ' + (c + 1) + '열'; }
+
+function buildSide() {
+  var s = el('side'); s.innerHTML = '';
+  var r, c;
+
+  /* ===== 전투 중 ===== */
+  if (GAME.phase === 'battle') {
+    var b = GAME.b;
+    var hd = mk('div', 'sh');
+    hd.innerHTML = '전투 진행 <em>스테이지 ' + GAME.st.stage + (b.sd.boss ? ' · 보스' : '') + '</em>';
+    s.appendChild(hd);
+    var bar = mk('div', 'pbar', '<i id="s_bar"></i>');
+    s.appendChild(bar);
+    s.appendChild(twoCol('전황',
+      '<span>웨이브</span><b id="s_wave">' + waveOf(b) + ' / ' + b.sd.waves + '</b>' +
+      '<span>남은 적</span><b id="s_left">' + (b.total - b.kills) + '</b>' +
+      '<span>처치</span><b id="s_kill">' + b.kills + ' / ' + b.total + '</b>',
+      '전과',
+      '<span>획득 코인</span><b id="s_coin" style="color:var(--gold)">' + fmtNum(b.coins) + '</b>' +
+      '<span>남은 시간</span><b id="s_time">' + Math.ceil(b.limit - b.t) + '초</b>' +
+      '<span>파괴 터렛</span><b id="s_lost">0</b>'));
+    var bb = mk('div', 'btns');
+    var sp = mk('button', 'bt', GAME.speed === 1 ? '2배속' : '1배속');
+    sp.onclick = function () { GAME.speed = GAME.speed === 1 ? 2 : 1; GAME.dirty = true; Snd.ui('tap'); };
+    var pa = mk('button', 'bt', '일시정지');
+    pa.onclick = function () { GAME.paused = true; openModal('pause'); Snd.ui('tap'); };
+    bb.appendChild(sp); bb.appendChild(pa); s.appendChild(bb);
+    return;
+  }
+
+  var sel = GAME.sel, g0 = sel ? GAME.st.grid[sel.r][sel.c] : null;
+
+  /* ===== 설치된 터렛 상태창 ===== */
+  if (g0) {
+    var def = TURRET_BY_ID[g0.id], cur = tStat(def, g0.lv), T = TIERS[def.tier];
+    var mx = cur.hp, ratio = g0.hp / mx;
+    var nx = g0.lv < MAX_LEVEL ? tStat(def, g0.lv + 1) : null;
+    var invest = investOf(def, g0.lv);
+
+    var head = mk('div', 'sh');
+    head.innerHTML = tierChip(def) + '<span style="color:' + T.col + '">' + def.name + '</span>' +
+      '<em>Lv.' + g0.lv + ' / ' + MAX_LEVEL + ' · ' + cellName(sel.r, sel.c) + '</em>';
+    s.appendChild(head);
+
+    var hcol = ratio > .5 ? '#4ade80' : (ratio > .25 ? '#fbbf24' : '#f87171');
+    var hb = mk('div', 'hprow');
+    hb.innerHTML = '<span style="color:var(--mu)">체력</span>' +
+      '<div class="pbar"><i style="width:' + (ratio * 100).toFixed(1) + '%;background:' + hcol + '"></i></div>' +
+      '<b style="color:' + hcol + '">' + Math.round(g0.hp) + ' / ' + mx + '</b>';
+    s.appendChild(hb);
+
+    s.appendChild(twoCol('능력치', statGrid(def, g0.lv, cur, nx), '비용',
+      '<span>설치 가격</span><b>' + fmtNum(buyCost(def)) + '</b>' +
+      '<span>누적 투자</span><b>' + fmtNum(invest) + '</b>' +
+      '<span>다음 레벨</span><b>' + (nx ? fmtNum(upCost(def, g0.lv)) : '최대') + '</b>' +
+      '<span>판매 시</span><b style="color:var(--gold)">' + fmtNum(sellValue(def, g0.lv, ratio)) + '</b>' +
+      '<span>보유 코인</span><b>' + fmtNum(GAME.st.coins) + '</b>'));
+    s.appendChild(mk('div', 'desc', descOf(def, g0.lv)));
+
+    var btns = mk('div', 'btns');
+    if (nx) {
+      var uc = upCost(def, g0.lv);
+      var bu = mk('button', 'bt up', '레벨업 <b>' + fmtNum(uc) + '</b>');
+      bu.onclick = function () { doUpgrade(sel.r, sel.c); };
+      if (uc > GAME.st.coins) bu.classList.add('off');
+      btns.appendChild(bu);
+    } else btns.appendChild(mk('div', 'bt off', '최대 레벨'));
+    if (ratio < 0.999) {
+      var rc = repairCost(def, g0.lv, ratio);
+      var br = mk('button', 'bt fix', '수리 <b>' + fmtNum(rc) + '</b>');
+      br.onclick = function () { doRepair(sel.r, sel.c); };
+      if (rc > GAME.st.coins) br.classList.add('off');
+      btns.appendChild(br);
+    }
+    var bs = mk('button', 'bt sell', '판매 <b>' + fmtNum(sellValue(def, g0.lv, ratio)) + '</b>');
+    bs.onclick = function () { doSell(sel.r, sel.c); };
+    btns.appendChild(bs);
+    s.appendChild(btns);
+    return;
+  }
+
+  /* ===== 빈 칸 + 고른 터렛 = 설치 확인 ===== */
+  if (GAME.pickDef) {
+    var d = GAME.pickDef, s1 = tStat(d, 1), cost = buyCost(d);
+    var h2 = mk('div', 'sh');
+    h2.innerHTML = tierChip(d) + '<span style="color:' + TIERS[d.tier].col + '">' + d.name + '</span>' +
+      (sel ? '<em>' + cellName(sel.r, sel.c) + '</em>' : '');
+    s.appendChild(h2);
+
+    s.appendChild(twoCol('Lv.1 능력치', statGrid(d, 1, s1, null), '비용',
+      '<span>설치 가격</span><b style="color:var(--gold)">' + fmtNum(cost) + '</b>' +
+      '<span>보유 코인</span><b>' + fmtNum(GAME.st.coins) + '</b>' +
+      '<span>설치 후 잔액</span><b>' + fmtNum(Math.max(0, GAME.st.coins - cost)) + '</b>' +
+      '<span>레벨업 비용</span><b>' + fmtNum(d.up) + ' × 레벨</b>' +
+      '<span>만렙 총액</span><b>' + fmtNum(investOf(d, MAX_LEVEL)) + '</b>'));
+    s.appendChild(mk('div', 'desc', descOf(d, 1)));
+
+    var bt2 = mk('div', 'btns');
+    if (!sel) {
+      bt2.appendChild(mk('div', 'bt off', '설치할 칸을 선택하세요'));
+    } else {
+      var ok = cost <= GAME.st.coins;
+      var bi = mk('button', 'bt up', '여기에 설치 <b>' + fmtNum(cost) + '</b>');
+      if (!ok) { bi.classList.add('off'); bi.innerHTML = '코인 부족 <b>' + fmtNum(cost) + '</b>'; }
+      bi.onclick = function () { doBuild(sel.r, sel.c); };
+      bt2.appendChild(bi);
+    }
+    var bc = mk('button', 'bt', '취소');
+    bc.onclick = function () { GAME.pickDef = null; GAME.dirty = true; Snd.ui('tap'); };
+    bt2.appendChild(bc);
+    s.appendChild(bt2);
+    return;
+  }
+
+  /* ===== 빈 칸만 선택 ===== */
+  if (sel) {
+    var h3 = mk('div', 'sh');
+    h3.innerHTML = '빈 자리 <em>' + cellName(sel.r, sel.c) + '</em>';
+    s.appendChild(h3);
+    s.appendChild(mk('div', 'desc', '아래 상점에서 터렛을 고르면 이 자리의 설치 버튼이 나타납니다. 다른 칸을 누르면 자리를 바꿀 수 있습니다.'));
+    var bt3 = mk('div', 'btns');
+    var bx = mk('button', 'bt', '선택 해제');
+    bx.onclick = function () { GAME.sel = null; GAME.dirty = true; Snd.ui('tap'); };
+    bt3.appendChild(bx);
+    s.appendChild(bt3);
+    return;
+  }
+
+  /* ===== 기본: 스테이지 정보 ===== */
+  var sd = stageDef(GAME.st.stage);
+  var cnt = 0, rows = {};
+  for (r = 0; r < GRID_ROWS; r++) for (c = 0; c < GRID_COLS; c++) if (GAME.st.grid[r][c]) { cnt++; rows[r] = 1; }
+  var empty = [];
+  for (r = 0; r < GRID_ROWS; r++) if (!rows[r]) empty.push(r + 1);
+
+  s.appendChild(mk('div', 'sh', '스테이지 ' + GAME.st.stage + ' / ' + MAX_STAGE + (sd.boss ? ' · 보스' : '')));
+  var st4 = mk('div', 'stat');
+  st4.innerHTML = '<span>웨이브</span><b>' + sd.waves + '</b>' +
+    '<span>적 규모</span><b>' + (sd.waves * sd.per + (sd.boss ? bossCountOf(sd.stage) : 0)) + '</b>' +
+    '<span>배치 터렛</span><b>' + cnt + ' / 50</b>' +
+    '<span>클리어 보상</span><b style="color:var(--gold)">' + fmtNum(sd.clearBonus) + '</b>';
+  s.appendChild(st4);
+  if (empty.length)
+    s.appendChild(mk('div', 'note', '터렛이 없는 행: ' + empty.join(', ') + '행'));
+  var go = mk('button', 'go', '전투 시작');
+  go.onclick = startBattle;
+  if (cnt === 0) go.classList.add('off');
+  s.appendChild(go);
+}
+
+function descOf(def, lv) {
+  if (!def.sp) return def.desc;
+  return def.desc.replace(/\{(\w+)\}/g, function (m, k) {
+    var v = spVal(def, lv, k);
+    if (k === 'n' || k === 'lanes') return v;
+    if (k === 'dps' || k === 'hps' || k === 'burn') return Math.round(v);
+    if (k === 'pct') return (Math.round(v * 1000) / 10) + '%';
+    if (k === 'd' || k === 'r') return (Math.round(v * 10) / 10);
+    if (k === 'mult') return v;
+    return Math.round(v * 100) + '%';
+  });
+}
+
+/* ---------- 상단 HUD ---------- */
+var lastCoin = -1;
+function buildTop() {
+  el('t_stage').textContent = GAME.st.stage + ' / ' + MAX_STAGE;
+  var cEl = el('t_coin');
+  cEl.textContent = fmtNum(GAME.st.coins);
+  if (lastCoin >= 0 && GAME.st.coins > lastCoin) {
+    cEl.classList.remove('up'); void cEl.offsetWidth; cEl.classList.add('up');
+  }
+  lastCoin = GAME.st.coins;
+  el('t_phase').textContent = GAME.phase === 'battle' ? '전투' : '준비';
+}
+
+function showBanner(main, sub) {
+  var b = el('banner');
+  b.firstChild.textContent = main;
+  b.lastChild.textContent = sub || '';
+  b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+}
+
+function refreshUI() {
+  buildTop(); buildShop(); buildSide(); GAME.dirty = false;
+}
+
+/* ---------- 행동 ---------- */
+
+function doBuild(r, c) {
+  var d = GAME.pickDef; if (!d) return;
+  if (GAME.st.stage < TIERS[d.tier].unlock) { toast(TIERS[d.tier].unlock + '스테이지 이후 구매 가능합니다.', 1); return; }
+  var cost = buyCost(d);
+  if (cost > GAME.st.coins) { toast('코인이 부족합니다.', 1); Snd.ui('no'); return; }
+  GAME.st.coins -= cost;
+  GAME.st.grid[r][c] = { id: d.id, lv: 1, hp: tStat(d, 1).hp };
+  Snd.ui('build'); rebuildPrep();
+  GAME.sel = { r: r, c: c }; GAME.pickDef = null; GAME.dirty = true;
+  hint('start', '아래 전투 시작을 누르면 전투가 시작됩니다.');
+}
+function doUpgrade(r, c) {
+  var g = GAME.st.grid[r][c]; if (!g || g.lv >= MAX_LEVEL) return;
+  var def = TURRET_BY_ID[g.id], cost = upCost(def, g.lv);
+  if (cost > GAME.st.coins) { toast('코인이 부족합니다.', 1); Snd.ui('no'); return; }
+  var oldMax = tStat(def, g.lv).hp, ratio = g.hp / oldMax;
+  GAME.st.coins -= cost; g.lv++;
+  g.hp = Math.max(1, Math.round(tStat(def, g.lv).hp * ratio));
+  Snd.ui('up'); rebuildPrep(); GAME.dirty = true;
+  FX.ring(c + .5, r + .5, 0.9, TIERS[def.tier].lit);
+}
+function doRepair(r, c) {
+  var g = GAME.st.grid[r][c]; if (!g) return;
+  var def = TURRET_BY_ID[g.id], mx = tStat(def, g.lv).hp, ratio = g.hp / mx;
+  if (ratio >= 0.999) return;
+  var cost = repairCost(def, g.lv, ratio);
+  if (cost > GAME.st.coins) { toast('코인이 부족합니다.', 1); Snd.ui('no'); return; }
+  GAME.st.coins -= cost; g.hp = mx;
+  Snd.ui('ok'); rebuildPrep(); GAME.dirty = true;
+}
+function doSell(r, c) {
+  var g = GAME.st.grid[r][c]; if (!g) return;
+  var def = TURRET_BY_ID[g.id], mx = tStat(def, g.lv).hp;
+  var val = sellValue(def, g.lv, g.hp / mx);
+  GAME.st.coins += val; GAME.st.grid[r][c] = null;
+  Snd.ui('sell'); toast('판매 완료 · ' + fmtNum(val) + ' 코인');
+  rebuildPrep(); GAME.sel = null; GAME.dirty = true;
+}
+
+function startBattle() {
+  var cnt = 0; for (var r = 0; r < GRID_ROWS; r++) for (var c = 0; c < GRID_COLS; c++) if (GAME.st.grid[r][c]) cnt++;
+  if (!cnt) { toast('터렛을 최소 1대 배치해야 합니다.', 1); Snd.ui('no'); return; }
+  GAME.b = makeBattle(GAME.st, (Date.now() ^ (GAME.st.stage * 7919)) >>> 0);
+  GAME.phase = 'battle'; GAME.sel = null; GAME.pickDef = null; GAME.speed = 1; GAME.dirty = true;
+  Snd.ui('ok'); Snd.resume(); Snd.setIntensity(1);
+  showBanner('STAGE ' + GAME.st.stage, GAME.b.sd.boss ? '보스 출현' : '');
+  hint('battle', '적이 방어선에 닿으면 즉시 실패합니다.');
+}
+
+function endBattle() {
+  var b = GAME.b, res = commitBattle(b, GAME.st);
+  GAME.phase = 'prep'; GAME.lastResult = { win: b.status === 'clear', reason: b.reason, res: res, b: b };
+  rebuildPrep(); GAME.dirty = true;
+  Snd.setIntensity(0);
+  Snd.ui(b.status === 'clear' ? 'clear' : 'fail');
+  showResult();
+  GAME.b = null;
+}
+
+function showResult() {
+  var L = GAME.lastResult, b = L.b, box = el('m_result');
+  var why = L.win ? '' : (L.reason === 'time' ? '제한 시간을 초과했습니다.' : '적이 방어선을 돌파했습니다.');
+  var lost = b.turrets.filter(function (t) { return t.dead; }).length;
+  var last = GAME.st.stage >= MAX_STAGE && L.win;
+  box.innerHTML =
+    '<h2 class="' + (L.win ? 'win' : 'lose') + '">' + (last ? '전역 완료' : (L.win ? '스테이지 클리어' : '스테이지 실패')) + '</h2>' +
+    (why ? '<p class="why">' + why + '</p>' : '') +
+    '<div class="rs">' +
+    '<span>처치</span><b>' + b.kills + ' / ' + b.total + '</b>' +
+    '<span>처치 코인</span><b>' + fmtNum(L.res.kill) + '</b>' +
+    '<span>' + (L.win ? '클리어 보너스' : '진행 보상') + '</span><b>' + fmtNum(L.res.bonus) + '</b>' +
+    '<span>파괴된 터렛</span><b>' + lost + '</b>' +
+    '<span>총 획득</span><b class="hi">' + fmtNum(L.res.gain) + '</b>' +
+    '</div>' +
+    '<button class="go" id="r_ok">' + (last ? '계속 플레이' : (L.win ? '다음 스테이지' : '다시 도전')) + '</button>';
+  openModal('result');
+  el('r_ok').onclick = function () { closeModal(); GAME.dirty = true; Snd.ui('tap'); };
+}
+
+/* ---------- 캔버스 입력 ---------- */
+function onField(px, py) {
+  if (GAME.phase !== 'prep') return;
+  var c = Math.floor((px - GX) / CELL), r = Math.floor(py / CELL);
+  if (c < 0 || c >= GRID_COLS || r < 0 || r >= GRID_ROWS) {
+    if (GAME.sel) { GAME.sel = null; GAME.dirty = true; }
+    return;
+  }
+  var g = GAME.st.grid[r][c];
+  GAME.sel = { r: r, c: c };
+  if (g) GAME.pickDef = null;
+  GAME.dirty = true; Snd.ui('tap');
+  if (!g && !GAME.pickDef) hint('pick2', '아래 상점에서 터렛을 고르면 설치 버튼이 나옵니다.');
+  if (!g && GAME.pickDef) hint('confirm', '오른쪽 아래 설치 버튼을 눌러야 배치됩니다.');
+}
+
+/* ===== src/70_boot.js ===== */
+/* ============================================================
+   IRONGRID - 부팅 / 스케일 / 루프 / 저장 통신
+   ============================================================ */
+
+/* ↓↓↓ 배포 전에 이 두 줄만 채우면 됩니다 ↓↓↓ */
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbzPFcFx4Fhh3QOrdih-SWgmp3OXAYqzRR6jd-xTJtSIrjGUEhSS6sndvZ-W6FAiGfVy/exec';                       // 구글 앱스 스크립트 웹앱 주소
+var ADMIN_CONTACT = 'https://open.kakao.com/o/sA3UnYLi';   // 예: sample@mail.com
+/* ↑↑↑ ------------------------------------ ↑↑↑ */
+
+var IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var stageEl, started = false;
+
+/* ---------- 화면 맞춤 ---------- */
+function fitStage() {
+  var vv = window.visualViewport;
+  var vw = vv ? vv.width : window.innerWidth;
+  var vh = vv ? vv.height : window.innerHeight;
+  var k = Math.min(vw / 1280, vh / 720);
+  var w = 1280 * k, h = 720 * k;
+  var x = (vw - w) / 2;
+  var y = (GAME.mode === 'mobile' && IS_IOS) ? (vh - h - 2) : (vh - h) / 2;
+  stageEl.style.transform = 'translate(' + x.toFixed(1) + 'px,' + Math.max(0, y).toFixed(1) + 'px) scale(' + k.toFixed(4) + ')';
+  var warn = el('rotate');
+  warn.style.display = (GAME.mode === 'mobile' && vh > vw) ? 'flex' : 'none';
+}
+
+function goFullscreen() {
+  var d = document.documentElement;
+  var fn = d.requestFullscreen || d.webkitRequestFullscreen || d.mozRequestFullScreen || d.msRequestFullscreen;
+  if (fn) { try { var p = fn.call(d); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+  if (screen.orientation && screen.orientation.lock) { try { screen.orientation.lock('landscape').catch(function () {}); } catch (e) {} }
+}
+
+/* ---------- 입력 ---------- */
+function toLogical(cxp, cyp) {
+  var r = stageEl.getBoundingClientRect(), k = r.width / 1280;
+  return { x: (cxp - r.left) / k, y: (cyp - r.top) / k };
+}
+function bindInput() {
+  var canvas = el('field');
+  function handle(cxp, cyp) {
+    var p = toLogical(cxp, cyp);
+    onField(p.x, p.y - 46);
+  }
+  canvas.addEventListener('pointerdown', function (e) { e.preventDefault(); Snd.resume(); handle(e.clientX, e.clientY); }, { passive: false });
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+}
+
+/* ---------- 저장 통신 (JSONP) ---------- */
+var NET = {
+  call: function (params, cb) {
+    if (!GAS_URL) { cb({ ok: false, error: '서버 주소가 설정되지 않았습니다.' }); return; }
+    var name = 'ig_cb_' + Date.now().toString(36) + Math.floor(Math.random() * 1e4);
+    var s = document.createElement('script'), done = false;
+    var q = [];
+    for (var k in params) q.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+    q.push('callback=' + name);
+    function cleanup() { try { delete window[name]; } catch (e) { window[name] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+    var timer = setTimeout(function () { if (done) return; done = true; cleanup(); cb({ ok: false, error: '서버 응답이 없습니다. 잠시 후 다시 시도해 주세요.' }); }, 15000);
+    window[name] = function (res) { if (done) return; done = true; clearTimeout(timer); cleanup(); cb(res); };
+    s.onerror = function () { if (done) return; done = true; clearTimeout(timer); cleanup(); cb({ ok: false, error: '서버에 연결하지 못했습니다.' }); };
+    s.src = GAS_URL + (GAS_URL.indexOf('?') < 0 ? '?' : '&') + q.join('&');
+    document.body.appendChild(s);
+  }
+};
+var RE_ID = /^[가-힣]{2,12}$/, RE_PW = /^[0-9]{4}$/;
+function validAccount(id, pw) {
+  if (!RE_ID.test(id)) return '아이디는 한글 2~12자로 입력해 주세요.';
+  if (!RE_PW.test(pw)) return '비밀번호는 숫자 4자리로 입력해 주세요.';
+  return '';
+}
+function netMsg(id, txt, bad) { var e = el(id); e.textContent = txt; e.className = 'msg' + (bad ? ' bad' : ' ok'); }
+
+function doSave() {
+  var id = el('sv_id').value.trim(), pw = el('sv_pw').value.trim();
+  var v = validAccount(id, pw); if (v) { netMsg('sv_msg', v, 1); return; }
+  netMsg('sv_msg', '저장하는 중입니다.', 0);
+  el('sv_go').disabled = true;
+  NET.call({ action: 'save', id: id, pw: pw, data: encodeSave(GAME.st) }, function (r) {
+    el('sv_go').disabled = false;
+    if (!r || !r.ok) {
+      if (r && r.error === 'PW') netMsg('sv_msg', '비밀번호가 일치하지 않습니다.', 1);
+      else netMsg('sv_msg', (r && r.error) || '저장에 실패했습니다.', 1);
+      return;
+    }
+    netMsg('sv_msg', r.overwrite ? '이미 저장된 아이디입니다. 덮어쓰기 했습니다.' : '저장 됐습니다.', 0);
+    Snd.ui('ok');
+  });
+}
+function doLoad() {
+  var id = el('ld_id').value.trim(), pw = el('ld_pw').value.trim();
+  var v = validAccount(id, pw); if (v) { netMsg('ld_msg', v, 1); return; }
+  netMsg('ld_msg', '불러오는 중입니다.', 0);
+  el('ld_go').disabled = true;
+  NET.call({ action: 'load', id: id, pw: pw }, function (r) {
+    el('ld_go').disabled = false;
+    if (!r || !r.ok) {
+      if (r && r.error === 'PW') { netMsg('ld_msg', '비밀번호가 일치하지 않습니다.', 1); return; }
+      if (r && r.error === 'NOTFOUND') {
+        netMsg('ld_msg', '해당 아이디로 저장된 정보가 없습니다. 계정 분실이 의심되면 관리자에게 문의해 주세요.', 1);
+        el('ld_contact').style.display = 'block';
+        return;
+      }
+      netMsg('ld_msg', (r && r.error) || '불러오기에 실패했습니다.', 1); return;
+    }
+    var dec = decodeSave(r.data);
+    if (!dec.ok) { netMsg('ld_msg', '저장 데이터를 읽을 수 없습니다. (' + dec.why + ')', 1); return; }
+    GAME.st = dec.state; GAME.sel = null; GAME.pickDef = null; GAME.phase = 'prep';
+    rebuildPrep(); GAME.dirty = true;
+    netMsg('ld_msg', '불러오기 성공', 0); Snd.ui('ok');
+    setTimeout(function () { closeModal(); }, 800);
+  });
+}
+
+/* ---------- 설정 ---------- */
+function wireModals() {
+  el('b_pc').onclick = function () { begin('pc'); };
+  el('b_mo').onclick = function () { begin('mobile'); goFullscreen(); };
+
+  el('t_set').onclick = function () { if (GAME.phase === 'battle') { GAME.paused = true; } openModal('settings'); Snd.ui('tap'); };
+  el('set_close').onclick = function () { closeModal(); GAME.paused = false; Snd.ui('tap'); };
+  el('set_save').onclick = function () { openModal('save'); netMsg('sv_msg', '', 0); };
+  el('set_load').onclick = function () { openModal('load'); netMsg('ld_msg', '', 0); el('ld_contact').style.display = 'none'; };
+  el('set_help').onclick = function () { openModal('help'); };
+  el('help_close').onclick = function () { openModal('settings'); };
+  el('set_mode').onclick = function () { openModal('boot'); };
+  el('set_sfx').onclick = function () { Snd.on = !Snd.on; this.textContent = '효과음 ' + (Snd.on ? '켜짐' : '꺼짐'); };
+  el('set_bgm').onclick = function () { Snd.setMusic(!Snd.musicOn); this.textContent = '배경음 ' + (Snd.musicOn ? '켜짐' : '꺼짐'); };
+  el('set_reset').onclick = function () {
+    if (!this.dataset.armed) { this.dataset.armed = '1'; this.textContent = '정말 초기화하려면 한 번 더'; return; }
+    this.dataset.armed = ''; this.textContent = '진행 초기화';
+    GAME.st = newState(); GAME.sel = null; GAME.pickDef = null; GAME.phase = 'prep';
+    rebuildPrep(); GAME.dirty = true; closeModal(); toast('진행을 초기화했습니다.');
+  };
+  el('sv_go').onclick = doSave; el('ld_go').onclick = doLoad;
+  el('sv_close').onclick = function () { openModal('settings'); };
+  el('ld_close').onclick = function () { openModal('settings'); };
+  el('pause_go').onclick = function () { GAME.paused = false; closeModal(); };
+  el('pause_quit').onclick = function () {
+    GAME.paused = false; closeModal();
+    GAME.b.status = 'fail'; GAME.b.reason = 'give'; endBattle();
+  };
+  el('ld_contact').textContent = '관리자 문의: ' + ADMIN_CONTACT;
+  el('help_contact').textContent = '관리자 문의: ' + ADMIN_CONTACT;
+}
+
+function begin(mode) {
+  GAME.mode = mode; closeModal(); fitStage();
+  if (started) return;
+  started = true;
+  Snd.init(); Snd.resume();
+  requestAnimationFrame(loop);
+  hint('first', '빈 칸을 누른 뒤 아래에서 터렛을 고르세요.');
+}
+
+/* ---------- 메인 루프 ---------- */
+var lastT = 0, acc = 0, hudTick = 0;
+function loop(ts) {
+  requestAnimationFrame(loop);
+  var dt = (ts - lastT) / 1000; lastT = ts;
+  if (!isFinite(dt) || dt < 0) dt = 0;
+  if (dt > 0.1) dt = 0.1;
+
+  var modalOpen = el('mask').style.display === 'flex';
+  var running = GAME.phase === 'battle' && !GAME.paused && !modalOpen;
+
+  if (running) {
+    GAME.st.playSec += dt;
+    if (Stop.t > 0) Stop.t -= dt;
+    else {
+      acc += dt * GAME.speed;
+      var steps = 0;
+      while (acc >= 1 / 60 && steps < 8) { stepBattle(GAME.b, 1 / 60); acc -= 1 / 60; steps++; if (GAME.b.status !== 'run') break; }
+      if (acc > 0.25) acc = 0;
+    }
+  } else acc = 0;
+
+  updateFX(dt);
+  if (toastT > 0) { toastT -= dt; if (toastT <= 0) el('toast').className = 'toast'; }
+
+  drawField(GAME.phase === 'battle' ? GAME.b : null, GAME.phase === 'prep', GAME.sel, GAME.pickDef, ts / 1000);
+
+  if (GAME.dirty) refreshUI();
+  else if (GAME.phase === 'battle') {
+    hudTick += dt;
+    if (hudTick > 0.12) {
+      hudTick = 0; var b = GAME.b;
+      var a = el('s_left'); if (a) a.textContent = (b.total - b.kills);
+      var k2 = el('s_kill'); if (k2) k2.textContent = b.kills + ' / ' + b.total;
+      var c2 = el('s_coin'); if (c2) c2.textContent = fmtNum(b.coins);
+      var t2 = el('s_time'); if (t2) t2.textContent = Math.max(0, Math.ceil(b.limit - b.t)) + '초';
+      var bar = el('s_bar'); if (bar) bar.style.width = Math.min(100, b.kills / Math.max(1, b.total) * 100).toFixed(1) + '%';
+      var wv = el('s_wave'); if (wv) wv.textContent = waveOf(b) + ' / ' + b.sd.waves;
+      var ls = el('s_lost');
+      if (ls) { var n = 0; for (var q = 0; q < b.turrets.length; q++) if (b.turrets[q].dead) n++;
+        ls.textContent = n; ls.style.color = n ? '#f87171' : ''; }
+    }
+  }
+  if (GAME.phase === 'battle' && GAME.b && GAME.b.status !== 'run') endBattle();
+
+}
+
+/* ---------- 시작 ---------- */
+function boot() {
+  stageEl = el('stage');
+  el('ver').textContent = 'v' + VERSION;
+  buildSprites();
+  initRender(el('field'));
+  GAME.st = newState();
+  rebuildPrep();
+  wireModals(); bindInput();
+  refreshUI();
+  fitStage();
+  window.addEventListener('resize', fitStage);
+  window.addEventListener('orientationchange', function () { setTimeout(fitStage, 250); });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fitStage);
+  document.addEventListener('fullscreenchange', function () { setTimeout(fitStage, 120); });
+  openModal('boot');
+}
+window.addEventListener('load', boot);
+
+</script></body></html>
